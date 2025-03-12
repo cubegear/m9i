@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+	<meta charset="utf-8">
+
+	<title>Formularz</title>
+	
+	<link rel="stylesheet" href="">
+	
+	<style>
+		table,tr,td,th {
+			border: 1px solid black;
+			border-collapse: collapse;
+			padding: 5px;
+		}
+
+		span {
+			float: right;
+			color: red;
+			margin-left: 10px;
+		}
+
+		input#reset, input#submit {
+			width: 200px;
+		}
+	</style>
+
+	<script>
+
+	</script>
+</head>
+<body>
+	<form action="" id="myForm" method="post">
+		<table>
+			<tr>
+				<td>Imię</td>
+				<td>
+					<input type="text" name="imie" id="imie" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Nazwisko</td>
+				<td>
+					<input type="text" name="nazwisko" id="nazwisko" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Płeć</td>
+				<td>
+					<input type="radio" id="mezczyzna" name="plec" value="Mężczyzna" required>
+					<label for="mezczyzna">Mężczyzna</label>
+					<input type="radio" id="kobieta" name="plec" value="Kobieta" required>
+					<label for="kobieta">Kobieta</label>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Wykształcenie</td>
+				<td>
+					<select name="wyksztalcenie" id="wyksztalcenie">
+						<option value="brak">Brak</option>
+						<option value="podstawowe">Podstawowe</option>
+						<option value="zawodowe">Zawodowe</option>
+						<option value="srednie">Średnie</option>
+						<option value="licencjat">Licencjat</option>
+						<option value="inzynierskie">Inżynierskie</option>
+						<option value="wyzsze">Wyższe</option>
+					</select>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Ulica</td>
+				<td>
+					<input type="text" id="ulica" name="ulica" placeholder="Aaaaaaaa x/y" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Kod miejscowości</td>
+				<td>
+					<input type="text" maxlength="6" placeholder="XX-YYY" id="kod" name="kod" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Nazwa miejscowości</td>
+				<td>
+					<input type="miejscowosc" name="miejscowosc" id="miejscowosc" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Wiek użytkownika</td>
+				<td>
+					<input type="number" min="1" max="111" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Numer telefonu komórkowego</td>
+				<td>
+					<input type="text" id="tel" name="tel" placeholder="+XX YYY YYY YYY" maxlength="15" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Adres e-mail</td>
+				<td>
+					<input type="text" name="emial" id="email" required>
+					<span>*Pole Obowiązkowe</span>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2"><input type="reset" id="reset" value="RESET"></td>
+			</tr>
+
+			<tr>
+				<td colspan="2"><input type="submit" id="submit" value="WYŚLIJ"></td>
+			</tr>
+		</table>
+	</form>
+
+	<br>
+
+	<form action="" method="post" id="wyswietlForm">
+		<textarea id="output" rows="10" cols="50" readonly></textarea><br>
+		<input type="button" value="Wyświetl" id="wyswietl">
+	</form>
+	
+	
+
+	<script>
+		document.getElementById("imie").addEventListener("input", function() {
+			this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+		});
+
+		document.getElementById("nazwisko").addEventListener("input", function() {
+			this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+		});
+
+		document.getElementById("miejscowosc").addEventListener("input", function() {
+			this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+		});
+
+		document.getElementById("kod").addEventListener("input", function(input) {
+			let value = input.target.value.replace(/\D/g, "");
+			if (value.length > 2) {
+				value = value.slice(0, 2) + "-" + value.slice(2, 5);
+			}
+			input.target.value = value;
+		});	
+
+		document.getElementById("tel").addEventListener("input", function(event) {
+			let value = event.target.value.replace(/\D/g, "");
+			if (value.length > 2) {
+				value = "+" + value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5, 8) + " " + value.slice(8, 11);
+			}
+			event.target.value = value;
+		});	
+
+		document.getElementById('wyswietl').addEventListener('click', function(event) {
+            let formData = new FormData(document.getElementById("myForm"));
+            let output = '';
+            for (let [key, value] of formData.entries()) {
+                output += `${key}: ${value}\n`;
+            }
+            document.getElementById('output').value = output;
+        });
+
+		document.getElementById("ulica").addEventListener("blur", function() {
+			this.value = "ul. " + this.value
+		});
+		
+		onload = function() {
+			document.getElementById("imie").focus();
+		}
+
+		document.getElementById("submit").addEventListener("submit", function() {
+			alert("Formularz został wysłany");
+		});
+
+
+		const clearButtons = document.querySelectorAll('.clear');
+
+	
+		
+	</script>
+</body>
+</html>
