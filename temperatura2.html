@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+	<meta charset="utf-8">
+
+	<title>Temperatura</title>
+	
+	<link rel="stylesheet" href="">
+	
+
+</head>
+<body>
+    <form action="" method="post">
+        <label for="input">Temperatura</label>
+        <input type="number" name="input" id="input">
+        <label for="stopnie">Stopnie: </label>
+        <select name="stopnie" id="stopnie">
+            <option value="Celsjusza">Celsjusza</option>
+            <option value="Fahrenheita">Fahrenheit</option>
+            <option value="Kelvina">Kelivn</option>
+        </select>  
+        <br><br>
+        <input type="button" value="Convert" name="convert" id="convert">
+
+        <br><br>
+        <label for="wynik">Wynik:</label>
+        <br>
+        <textarea name="wynik" id="wynik" rows="5" cols="20" readonly></textarea>
+
+        
+
+    <script>
+        document.getElementById('convert').addEventListener('click', function() {
+        const inputField = document.getElementById('input');
+        const unit = document.getElementById('stopnie').value;
+        const resultField = document.getElementById('wynik');
+        
+        const inputValue = parseFloat(inputField.value);
+        
+        // Sprawdzenie czy podano liczbę
+        if (isNaN(inputValue)) {
+            resultField.value = "Błąd: Proszę wprowadzić liczbę!";
+            return;
+        }
+
+        let celsius, fahrenheit, kelvin;
+        let output = "";
+
+        if(unit == 'Celsjusza'){
+            fahrenheit = (inputValue * 9/5) + 32;
+            kelvin = inputValue + 273.15;
+            
+            output = `Fahrenheit: ${fahrenheit.toFixed(2)}\nKelvin: ${kelvin.toFixed(2)}`;
+        }   else if(unit == 'Fahrenheita'){
+                celsius = (inputValue - 32) * 5/9;
+                kelvin = (inputValue - 32) * 5/9 + 273.15;
+                
+                output = `Celsjusz: ${celsius.toFixed(2)}\nKelvin: ${kelvin.toFixed(2)}`;
+            }   else if(unit == 'Kelvina') {
+                    if (inputValue < 0) {
+                    output = "Błąd: Temperatura w Kelwinach nie może być ujemna!\n0K to zero absolutne";
+                } else {
+                    celsius = inputValue - 273.15;
+                    fahrenheit = (inputValue - 273.15) * 9/5 + 32;
+                    
+                    output = `Celsjusz: ${celsius.toFixed(2)}\nFahrenheit: ${fahrenheit.toFixed(2)}`;
+                    }
+                }
+         
+    });
+    </script>
+</body>
+</html>

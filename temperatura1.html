@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+	<meta charset="utf-8">
+
+	<title>Temperatura</title>
+	
+	<link rel="stylesheet" href="">
+	
+
+</head>
+<body>
+    <form action="" method="post">
+        <label for="input">Wpisz temperature w stopniach celcjusza</label>
+        <input type="number" name="input" id="input">
+        <input type="button" value="Convert" name="convert" id="convert">
+
+        <br>
+
+        <label for="wynikk">Kelvin</label>
+        <input type="number" name="wynikk" id="wynikk" readonly>
+
+        <br>
+
+        <label for="wynikf">Faren</label>
+        <input type="number" name="wynikf" id="wynikf" readonly>
+    </form>
+
+    <script>
+        document.getElementById('convert').addEventListener('click', function() {
+            input = Number(document.getElementById('input').value);
+            wynikk = input + 273;
+            document.getElementById('wynikk').value = wynikk;
+
+            wynikf = (input * 9/5) + 32;
+            document.getElementById('wynikf').value = wynikf;
+        });
+    </script>
+</body>
+</html>
