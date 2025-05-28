@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang='pl'>
+<head>
+  <meta charset='UTF-8'>
+  <title>js_dom</title>
+  <link rel='stylesheet' href='style.css'>
+</head>
+<body>
+  <h1 id='mainTitle'>Skrypty JavaScript</h1>
+
+  <div class='section'>
+    <strong>Zmiana treści nagłówka h1</strong><br>
+    <label>Wpisz nowy tytuł:</label>
+    <input type='text' id='newTitle'>
+    <button id='changeTitle'>Zmień Tytuł</button>
+  </div>
+
+  <div class='section'>
+    <strong>Wstawianie tekstu</strong><br>
+    <label>Wpisz tekst do przekazania do bloku div:</label>
+    <input type='text' id='insertText'>
+    <button id='insertTextToDiv'>Pokaż tekst</button>
+    <div id='output'></div>
+  </div>
+
+  <div class='section'>
+    <strong>Zmiana właściwości CSS</strong><br>
+    <label>Wpisz kolor w notacji heksadecymalnej z #: </label>
+    <input type='text' id='colorInput'>
+    <button id='changeColor'>Zmień kolor</button><br>
+
+    <label>Wpisz czcionkę tytułu h1:</label>
+    <input type='text' id='fontInput'>
+    <button id='changeFont'>Zmień styl</button><br>
+
+    <label>Wpisz szerokość i wysokość #output:</label>
+    <input type='number' id='widthInput' placeholder='szerokosc'>
+    <input type='number' id='heightInput' placeholder='wysokosc'>
+    <button id='changeDimensions'>Zmień wymiary</button>
+  </div>
+
+  <div class='section'>
+    <strong>Zdarzenia</strong><br>
+    <p>Zmiana tytułu po najechaniu kursorem na >>Tytuł najechany<< i powrót po usunięciu kursora.</p>
+    <p>Na załadowanie strony komunikat powitalny (alert): >>Witaj user1 na stronie<<</p>
+    <p>Na opuszczenie strony komunikat pożegnalny (alert): >>Wróć ponownie<<</p>
+  </div>
+
+  <div class='section'>
+    <strong>Informacje o stronie</strong><br>
+    <p>Deklaracja typu dokumentu: html</p>
+    <p>Ilość formularzy: <span id='formCount'></span></p>
+    <p>Data ostatniej modyfikacji: <span id='lastModified'></span></p>
+    <p>Tytuł strony: <span id='pageTitle'></span></p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      alert('Witaj user1 na stronie');
+      document.getElementById('formCount').textContent = document.forms.length;
+      document.getElementById('lastModified').textContent = document.lastModified;
+      document.getElementById('pageTitle').textContent = document.title;
+
+      const title = document.getElementById('mainTitle');
+      const originalTitle = title.textContent;
+
+      title.addEventListener('mouseover', function() {
+        title.textContent = 'Tytuł najechany';
+      });
+
+      title.addEventListener('mouseout', function() {
+        title.textContent = originalTitle;
+      });
+    });
+
+    window.addEventListener('beforeunload', function() {
+      alert('Wróć ponownie');
+    });
+    
+    document.getElementById('changeTitle').addEventListener('click', function() {
+      const newTitle = document.getElementById('newTitle').value;
+      document.getElementById('mainTitle').textContent = newTitle;
+    });
+    
+    document.getElementById('insertTextToDiv').addEventListener('click', function() {
+      const text = document.getElementById('insertText').value;
+      document.getElementById('output').textContent = text;
+    });
+    
+    document.getElementById('changeColor').addEventListener('click', function() {
+      const color = document.getElementById('colorInput').value;
+      document.querySelectorAll('h1').forEach(h => h.style.color = color);
+    });
+   
+    document.getElementById('changeFont').addEventListener('click', function() {
+      const font = document.getElementById('fontInput').value;
+      document.querySelector('h1').style.fontFamily = font;
+    });
+  
+    document.getElementById('changeDimensions').addEventListener('click', function() {
+      const width = document.getElementById('widthInput').value;
+      const height = document.getElementById('heightInput').value;
+      const output = document.getElementById('output');
+      output.style.width = width + 'px';
+      output.style.height = height + 'px';
+    });
+  </script>
+</body>
+</html>
