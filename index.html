@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	
+	<title>jQuery </title>
+	
+	<!-- dołączenie biblioteki jQuery -->
+	<script src="jquery-3.5.1.js"></script>
+	<script src="jquery-3.7.1.js"></script>
+
+	
+
+	<style>
+		div#red {
+			margin: 0;
+  			position: relative;
+			background-color: rgb(205, 32, 32);
+			width: 100px;
+			height: 100px;
+			
+
+		}
+	</style>
+	
+</head>
+
+<body>
+	
+	<h3>Naciśnięcie klawisza myszy</h3>
+	<div id="powstanie">Kiedy wybuchło pierwsze Powstanie styczniowe?</div>
+	<div>Aby poznać odpowiedź <i>naprowadź kursor na pytanie i wciśnij przycisk myszy.</i></div>
+
+	<script>
+		$(document).ready(function() {
+			$('div#powstanie').on('click', function() {
+				alert('Powstanie styczniowe wybuchło 22 stycznia 1863 roku');
+			});
+			
+
+		});
+	</script>
+
+	<h3>Przekazywanie danych do metody obsługi wydarzeń</h3>
+	<input type="button" value="0" id="zero">
+	<input type="button" value="1" id="one">
+	<input type="button" value="2" id="two">
+	<input type="button" value="3" id="three">
+	<input type="button" value="4" id="four">
+	<input type="button" value="5" id="five">
+	<input type="button" value="6" id="six">
+	<input type="button" value="7" id="seven">
+	<input type="button" value="8" id="eigth">
+	<input type="button" value="9" id="nine">
+
+	<div id="output"></div>
+
+	<script>
+		$(document).ready(function() {
+			$('input#zero').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 0<br>');
+			});
+
+			$('input#one').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 1<br>');
+			});
+			$('input#two').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 2<br>');
+			});
+
+			$('input#three').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 3<br>');
+			});
+			
+			$('input#four').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 4<br>');
+			});
+
+			$('input#five').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 5<br>');
+			});
+
+			$('input#six').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 6<br>');
+			});
+
+			$('input#seven').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 7<br>');
+			});
+
+			$('input#eigth').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 8<br>');
+			});
+
+			$('input#nine').on('click', function() {
+				$('div#output').append('Został wybrany przycisk o wartiości = 9<br>');
+			});
+		});
+	</script>
+
+
+	<h3>Dodawanie nowego elementu/nowe treści</h3>
+
+	<div id="tekst">Ala ma kota. </div>
+
+	<br>
+
+	<input type="button" value="Dodaj tekst 1" id="tekst1">
+	<input type="button" value="Dodaj tekst 2" id="tekst2">
+
+
+	<script>
+		$(document).ready(function() {
+			$('input#tekst1').on('click', function() {
+				$('div#tekst').append('Ala ma kota. ');
+			});
+
+			$('input#tekst2').on('click', function() {
+				$('div#tekst').append('Kot ma Olę. ');
+			});
+			
+
+		});
+	</script>
+
+	<script></script>
+
+	<h3>Zmiana tła - dodanie/usunięcie reguły CSS</h3>
+
+	<div class="cytat"><b>Stare cytaty:</b></div><br>
+
+	<div>Ala ma kota</div>
+	<div>Kot ma Alę</div>
+	<div>Są ze sobą szczęśliwi :)</div>
+
+
+	<br>
+
+	<div class="cytat"><b>Nowe cytaty:</b></div>
+
+	<br>
+	<input type="button" value="Wyświetl tło" id="wyswietl">
+	<input type="button" value="Usuń tło" id="usun">
+
+
+	<script>
+		$(document).ready(function() {
+			$('input#wyswietl').on('click', function() {
+				$('div.cytat').css('backgroundColor', '#f0f');
+			});
+
+			$('input#usun').on('click', function() {
+				$('div.cytat').css('backgroundColor', '#fff');
+			});
+			
+
+		});
+	</script>
+
+	<h3>Zmiana rozmiaru elementu</h3>
+
+	<img src="godlo.png" alt="godlo" id="godlo"><br>
+	
+	<input type="button" value="Pokaż obrazek w powiększeniu" id="pow">
+
+	<script>
+		$(document).ready(function() {
+			$('img#godlo').css('width', '100');
+
+			$('input#pow').on('click', function() {
+				$('img#godlo').css('width', '200');
+			});
+	
+
+		});
+	</script>
+
+	<h3>Przesuwanie elementów strony</h3>
+	<input type="button" value="" id="lewo">
+	<input type="button" value="" id="prawo">
+	<input type="button" value="" id="gora">
+	<input type="button" value="" id="dol">
+
+	<br><br><br>
+	<div id="red"></div>
+
+
+	
+	<script>
+		$(document).ready(function() {
+
+
+			$('input#lewo').on('click', function() {
+				$('div#red').animate({left: '-=8px'}, 100);
+			});
+
+			$('input#prawo').on('click', function() {
+				$('div#red').animate({left: '+=8px'}, 100);
+			});
+
+			$('input#gora').on('click', function() {
+				$('div#red').animate({top: '-=8px'}, 100);
+			});
+
+			$('input#dol').on('click', function() {
+				$('div#red').animate({top: '+=8px'}, 100);
+			});
+		});
+
+	</script>
+	
+	
+	
+</body>
+</html>
