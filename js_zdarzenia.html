@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+	<meta charset="UTF-8">
+	
+	<title>JS - Zdarzenia</title>
+
+    <script>
+    </script>
+
+</head>
+<body>
+    <h1>Formularze i zdarzenia</h1>
+    <div>
+        Napisać funkcję wyliczającą równanie kwadratowe: ax<sup>2</sup>+bx+c=0. Dane pozyskane z formularza. Na załadowanie 
+        strony powitanie i komunikat o obowiązkowym wypełnieniu formularza. Na zakończenie pożegnania z 
+        podziękowaniem za trud. Nie można wysłać formularza z pustymi polami - odpowiedni komunikat <br>
+        Metody: inline, DOM (przynajmniej jedna z dwóch), addEventListener <br>
+        Nazwa ćwiczenia: js_zdarzenie, waga ćwiczenia: 2, czas na wykonanie: 30'
+    </div>
+	
+    <br><br>
+
+    <form action="">
+        <label for="a">a: </label>
+        <input type="text" id="a">
+        <br><br>
+        <label for="b">b: </label>
+        <input type="text" id="b">
+        <br><br>
+        <label for="c">c: </label>
+        <input type="text" id="c">
+        <br><br>
+        <input type="button" value="Oblicz" id="oblicz" onclick="sprawdzenieDanych()">
+    </form>
+    <div id="output"></div>
+
+    <script>
+
+        window.addEventListener('DOMContentLoaded', function() {
+            alert("Wytamy w naszym serwisie, przypominamy o konieczności wypełnienia formularza!!!");
+        });
+
+        function sprawdzenieDanych() {
+            let a = Number(document.getElementById('a').value);
+            let b = Number(document.getElementById('b').value);
+            let c = Number(document.getElementById('c').value);
+            let outputDiv = document.getElementById('output');
+
+            if (document.getElementById('a').value === "" ||
+                document.getElementById('b').value === "" ||
+                document.getElementById('c').value === "") {
+                outputDiv.textContent = "Wszystkie pola muszą być wypełnione.";
+                return;
+            }
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                outputDiv.textContent = "Wszystkie wartości muszą być liczbami.";
+                return;
+            }
+
+
+            let delta = b * b - 4 * a * c;
+            let result = "";
+
+            if (delta > 0) {
+                let x1 = (-b + Math.sqrt(delta)) / (2 * a);
+                let x2 = (-b - Math.sqrt(delta)) / (2 * a);
+                result = `Δ większa od zera, dwa pierwiastki: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+            } else if (delta === 0) {
+                let x = -b / (2 * a);
+                result = `Δ równa zero, jeden pierwiastek: x = ${x.toFixed(2)}`;
+            } else {
+                result = "Δ mniejsza od zera, brak pierwiastków";
+            }
+
+            outputDiv.textContent = result;
+        }
+    </script>
+	
+</body>
+</html>
