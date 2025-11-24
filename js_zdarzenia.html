@@ -10,6 +10,12 @@
 
 </head>
 <body>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            alert("Wytamy w naszym serwisie, przypominamy o konieczności wypełnienia formularza!!!");
+        });
+    </script>
+
     <h1>Formularze i zdarzenia</h1>
     <div>
         Napisać funkcję wyliczającą równanie kwadratowe: ax<sup>2</sup>+bx+c=0. Dane pozyskane z formularza. Na załadowanie 
@@ -20,6 +26,9 @@
     </div>
 	
     <br><br>
+
+
+    <h3>Metoda Inline</h3>
 
     <form action="">
         <label for="a">a: </label>
@@ -36,11 +45,6 @@
     <div id="output"></div>
 
     <script>
-
-        window.addEventListener('DOMContentLoaded', function() {
-            alert("Wytamy w naszym serwisie, przypominamy o konieczności wypełnienia formularza!!!");
-        });
-
         function sprawdzenieDanych() {
             let a = Number(document.getElementById('a').value);
             let b = Number(document.getElementById('b').value);
@@ -66,7 +70,7 @@
             if (delta > 0) {
                 let x1 = (-b + Math.sqrt(delta)) / (2 * a);
                 let x2 = (-b - Math.sqrt(delta)) / (2 * a);
-                result = `Δ większa od zera, dwa pierwiastki: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+                result = `Δ większa od zera i równa ${delta}, dwa pierwiastki: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
             } else if (delta === 0) {
                 let x = -b / (2 * a);
                 result = `Δ równa zero, jeden pierwiastek: x = ${x.toFixed(2)}`;
@@ -77,6 +81,186 @@
             outputDiv.textContent = result;
         }
     </script>
-	
+
+
+    <br><br><br><br>
+
+    <h3>Metoda DOM 1</h3>
+
+    <form action="">
+        <label for="a1">a: </label>
+        <input type="text" id="a1">
+        <br><br>
+        <label for="b1">b: </label>
+        <input type="text" id="b1">
+        <br><br>
+        <label for="c1">c: </label>
+        <input type="text" id="c1">
+        <br><br>
+        <input type="button" value="Oblicz" id="oblicz1">
+    </form>
+    <div id="output1"></div>
+
+    <script>
+        document.getElementById("oblicz1").onclick = sprawdzenieDanych1;
+
+        function sprawdzenieDanych1() {
+            let a = Number(document.getElementById('a1').value);
+            let b = Number(document.getElementById('b1').value);
+            let c = Number(document.getElementById('c1').value);
+            let outputDiv = document.getElementById('output1');
+
+            if (document.getElementById('a1').value === "" ||
+                document.getElementById('b1').value === "" ||
+                document.getElementById('c1').value === "") {
+                outputDiv.textContent = "Wszystkie pola muszą być wypełnione.";
+                return;
+            }
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                outputDiv.textContent = "Wszystkie wartości muszą być liczbami.";
+                return;
+            }
+
+
+            let delta = b * b - 4 * a * c;
+            let result = "";
+
+            if (delta > 0) {
+                let x1 = (-b + Math.sqrt(delta)) / (2 * a);
+                let x2 = (-b - Math.sqrt(delta)) / (2 * a);
+                result = `Δ większa od zera i równa ${delta}, dwa pierwiastki: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+            } else if (delta === 0) {
+                let x = -b / (2 * a);
+                result = `Δ równa zero, jeden pierwiastek: x = ${x.toFixed(2)}`;
+            } else {
+                result = "Δ mniejsza od zera, brak pierwiastków";
+            }
+
+            outputDiv.textContent = result;
+        }
+    </script>
+
+
+    <br><br><br><br>
+
+
+    <h3>Metoda addEventListener</h3>
+
+    <form action="">
+        <label for="a2">a: </label>
+        <input type="text" id="a2">
+        <br><br>
+        <label for="b2">b: </label>
+        <input type="text" id="b2">
+        <br><br>
+        <label for="c2">c: </label>
+        <input type="text" id="c2">
+        <br><br>
+        <input type="button" value="Oblicz" id="oblicz2">
+    </form>
+
+    <div id="output2"></div>
+
+    <script>
+        document.getElementById("oblicz2").addEventListener("click", sprawdzenieDanych2);
+
+        function sprawdzenieDanych2() {
+            let a = Number(document.getElementById('a2').value);
+            let b = Number(document.getElementById('b2').value);
+            let c = Number(document.getElementById('c2').value);
+            let outputDiv = document.getElementById('output2');
+
+            if (document.getElementById('a2').value === "" ||
+                document.getElementById('b2').value === "" ||
+                document.getElementById('c2').value === "") {
+                outputDiv.textContent = "Wszystkie pola muszą być wypełnione.";
+                return;
+            }
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                outputDiv.textContent = "Wszystkie wartości muszą być liczbami.";
+                return;
+            }
+
+
+            let delta = b * b - 4 * a * c;
+            let result = "";
+
+            if (delta > 0) {
+                let x1 = (-b + Math.sqrt(delta)) / (2 * a);
+                let x2 = (-b - Math.sqrt(delta)) / (2 * a);
+                result = `Δ większa od zera i równa ${delta}, dwa pierwiastki: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+            } else if (delta === 0) {
+                let x = -b / (2 * a);
+                result = `Δ równa zero, jeden pierwiastek: x = ${x.toFixed(2)}`;
+            } else {
+                result = "Δ mniejsza od zera, brak pierwiastków";
+            }
+
+            outputDiv.textContent = result;
+        }
+	</script>
+
+
+    <br><br><br><br>
+
+
+    <h3>Metoda DOM 2</h3>
+
+    <form action="" name="form3">
+        <label for="a3">a: </label>
+        <input type="text" id="a3">
+        <br><br>
+        <label for="b3">b: </label>
+        <input type="text" id="b3">
+        <br><br>
+        <label for="c3">c: </label>
+        <input type="text" id="c3">
+        <br><br>
+        <input type="button" value="Oblicz" id="oblicz3" name="oblicz3">
+    </form>
+
+    <div id="output3"></div>
+
+    <script>
+        document.form3.oblicz3.onclick = sprawdzenieDanych3;
+
+        function sprawdzenieDanych3() {
+            let a = Number(document.getElementById('a3').value);
+            let b = Number(document.getElementById('b3').value);
+            let c = Number(document.getElementById('c3').value);
+            let outputDiv = document.getElementById('output3');
+
+            if (document.getElementById('a3').value === "" ||
+                document.getElementById('b3').value === "" ||
+                document.getElementById('c3').value === "") {
+                outputDiv.textContent = "Wszystkie pola muszą być wypełnione.";
+                return;
+            }
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                outputDiv.textContent = "Wszystkie wartości muszą być liczbami.";
+                return;
+            }
+
+
+            let delta = b * b - 4 * a * c;
+            let result = "";
+
+            if (delta > 0) {
+                let x1 = (-b + Math.sqrt(delta)) / (2 * a);
+                let x2 = (-b - Math.sqrt(delta)) / (2 * a);
+                result = `Δ większa od zera i równa ${delta}, dwa pierwiastki: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+            } else if (delta === 0) {
+                let x = -b / (2 * a);
+                result = `Δ równa zero, jeden pierwiastek: x = ${x.toFixed(2)}`;
+            } else {
+                result = "Δ mniejsza od zera, brak pierwiastków";
+            }
+
+            outputDiv.textContent = result;
+        }
+	</script>
 </body>
 </html>
