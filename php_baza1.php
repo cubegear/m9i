@@ -14,7 +14,7 @@
         $email = trim($_POST['email']);
 
         if(empty($imie) || empty($nazwisko) || empty($wiek) || empty($miasto) || empty($kodMiasta) || empty($email)) {
-            echo "<p style='color:red'>Conajmniej jedno z pól jest puste</p>";
+            echo "<p style='color: red;'>Conajmniej jedno z pól jest puste</p>";
         } else {
             $errors = [];
 
@@ -34,15 +34,15 @@
                 $stmt->bind_param("ssisss", $imie, $nazwisko, $wiek_int, $miasto, $kodMiasta, $email);
 
                 if ($stmt->execute()) {
-                    echo "<p style='color:green'>Dodano osobę!</p>";
+                    echo "<p style='color: green;'>Dodano osobę!</p>";
                 } else {
-                    echo "<p style='color:red'>Błąd dodawania: {$stmt->error}</p>";
+                    echo "<p style='color: red;'>Błąd dodawania: {$stmt->error}</p>";
                 }
 
                 $stmt->close();
             } else {
                 foreach ($errors as $e) {
-                    echo "<p style='color:red'>$e</p>";
+                    echo "<p style='color: red;'>$e</p>";
                 }
             }
         }
@@ -181,3 +181,4 @@
     </div>
 </body>
 </html>
+
