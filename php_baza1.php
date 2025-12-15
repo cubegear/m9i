@@ -1,5 +1,10 @@
 <?php
-    $db_lnk = new mysqli("localhost", "root", "", "baza1");
+    $servername = "localhost";
+    $username   = "root";
+    $password   = "";
+    $dbname     = "baza1";
+
+    $db_lnk = new mysqli($servername, $username, $password, $dbname);
 
     if ($db_lnk->connect_error) {
         die("Błąd połączenia z bazą: " . $db_lnk->connect_error);
@@ -21,7 +26,7 @@
             if (!preg_match("/^[\p{L}]+$/u", $imie)) $errors[] = "Imię może zawierać tylko litery!";
             if (!preg_match("/^[\p{L}]+$/u", $nazwisko)) $errors[] = "Nazwisko może zawierać tylko litery!";
             if (!preg_match("/^[0-9]{2}$/", $wiek)) $errors[] = "Wiek musi być 2 cyframi (00–99)!";
-            if (!preg_match("/^[\p{L}]+$/u", $miasto)) $errors[] = "Miasto może zawierać tylko litery!";
+            if (!preg_match("/^[A-Z][a-z]*(?:\s[A-Z][a-z]*)*$/", $miasto)) $errors[] = "Miasto może zawierać tylko litery oraz spacje pomiędzy słowami nie mogą być większe niż 1 spacja!";
             if (!preg_match("/^[0-9]{2}-[0-9]{3}$/", $kodMiasta)) $errors[] = "Kod miasta musi mieć format XX-XXX!";
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Niepoprawny email!";
 
@@ -48,8 +53,8 @@
         }
     }
 
-    $allowed = ["id", "nazwisko", "wiek"];
-    $sort = (isset($_GET['sort']) && in_array($_GET['sort'], $allowed)) ? $_GET['sort'] : "id";
+    $allowed = ["imie", "nazwisko", "wiek"];
+    $sort = (isset($_GET['sort']) && in_array($_GET['sort'], $allowed)) ? $_GET['sort'] : "imie";
 
     $result = $db_lnk->query("SELECT * FROM baza1 ORDER BY $sort ASC");
     if (!$result) {
@@ -120,13 +125,13 @@
         <script>
             document.getElementById("imie").addEventListener("input", function() {
                 this.value = this.value.replace(/[\P{L}]+/gu, "");
-                this.value = this.value.slice(0, 1).toUpperCase() + this.value.slice(1);
+                this.value = this.value.slice(0, 1).toUpperCase() + this.value.slice(1).toLowerCase();
             });
 
 
             document.getElementById("nazwisko").addEventListener("input", function() {
                 this.value = this.value.replace(/[\P{L}]+/gu, "");
-                this.value = this.value.slice(0, 1).toUpperCase() + this.value.slice(1);
+                this.value = this.value.slice(0, 1).toUpperCase() + this.value.slice(1).toLowerCase();
             });
 
             document.getElementById("wiek").addEventListener("input", function() {
@@ -135,9 +140,21 @@
             });
 
             document.getElementById("miasto").addEventListener("input", function() {
-                this.value = this.value.replace(/[\P{L}]+/gu, "");
-                this.value = this.value.slice(0, 1).toUpperCase() + this.value.slice(1);
+                this.value = this.value.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż\s]/g, '');
+                this.value = this.value.replace(/\s+/g, ' ');
+                this.value = this.value.trimStart();
+                this.value = this.value
+                    .split(" ")
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(" ");
+                this.value = this.value.slice(0, 30);
             });
+
+            document.getElementById("miasto").addEventListener("blur", function() {
+                this.value = this.value.trim();
+            });
+
+
 
             document.getElementById("kodMiasta").addEventListener("input", function() {
                 this.value = this.value.replace(/\D/g, "");
@@ -154,20 +171,19 @@
         
         <p>
             Sortuj wg: 
+            <a href="?sort=imie">Imię</a> |
             <a href="?sort=nazwisko">Nazwisko</a> |
-            <a href="?sort=wiek">Wiek</a> |
-            <a href="?sort=id">ID</a>
+            <a href="?sort=wiek">Wiek</a>           
         </p>
 
         <table>
             <tr>
-                <th>ID</th><th>Imię</th><th>Nazwisko</th><th>Wiek</th><th>Miasto</th><th>Kod miasta</th><th>Email</th>
+                <th>Imię</th><th>Nazwisko</th><th>Wiek</th><th>Miasto</th><th>Kod miasta</th><th>Email</th>
             </tr>
 
             <?php
                 while($row = $result->fetch_assoc()) {
                     echo("<tr>");
-                    echo("<td>" . htmlspecialchars($row['id']) . "</td>");
                     echo("<td>" . htmlspecialchars($row['imie']) . "</td>");
                     echo("<td>" . htmlspecialchars($row['nazwisko']) . "</td>");
                     echo("<td>" . htmlspecialchars($row['wiek']) . "</td>");
@@ -181,4 +197,3 @@
     </div>
 </body>
 </html>
-
