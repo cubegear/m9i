@@ -65,22 +65,67 @@
     echo($iloscOdwiedzin);
     */
 
-    $pierwszyRazPlik = "./pierwszyRaz.txt";
-    $pierwszyRaz = file_get_contents($pierwszyRazPlik);
-    if(empty($pierwszyRaz)) file_put_contents($pierwszyRazPlik, Date("d-m-Y"));
-    $pierwszyRaz = file_get_contents($pierwszyRazPlik);
+    $odwiedzinyDane = [
+        "pierwszyRaz" => "",
+        "iloscOdwiedzin" => ""
+    ];
 
-    $iloscOdwiedzinPlik = "./iloscOdwiedzin.txt";
-    $iloscOdwiedzin = file_get_contents($iloscOdwiedzinPlik);
-    if(empty($iloscOdwiedzin)) {
-        file_put_contents($iloscOdwiedzinPlik, 1);
-    } else {
-        $count = (int) $iloscOdwiedzin += 1;
-        file_put_contents($iloscOdwiedzinPlik, $count);
+    $odwiedzinyPlik = "./odwiedziny.json";
+    $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
+    $odwiedziny = json_decode($odwiedzinyJson, true);
+
+    
+
+    if(empty($odwiedziny)) {
+        $odwiedzinyDane = [
+            "pierwszyRaz" => Date("d-m-Y"),
+            "iloscOdwiedzin" => "1"
+        ];
+        
+        file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
+        $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
+        $odwiedziny = json_decode($odwiedzinyJson, true);
     }
-    $iloscOdwiedzin = file_get_contents($iloscOdwiedzinPlik);
 
-    echo("Witryna została odwiedzona $iloscOdwiedzin razy od $pierwszyRaz");
+    
+    
+    if(empty($odwiedziny["pierwszyRaz"])) {
+        $odwiedzinyDane = [
+            "pierwszyRaz" => Date("d-m-Y"),
+            "iloscOdwiedzin" => $odwiedziny["iloscOdwiedzin"]
+        ];
+        
+        file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
+        $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
+        $odwiedziny = json_decode($odwiedzinyJson, true);
+    }
+
+    
+
+    if(empty($odwiedziny["iloscOdwiedzin"])) {
+        $odwiedzinyDane = [
+            "pierwszyRaz" => $odwiedziny["pierwszyRaz"],
+            "iloscOdwiedzin" => "1"
+        ];
+        
+        file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
+        $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
+        $odwiedziny = json_decode($odwiedzinyJson, true);
+    }
+
+
+    $odwiedzinyDane = [
+        "pierwszyRaz" => $odwiedziny["pierwszyRaz"],
+        "iloscOdwiedzin" => ((int)$odwiedziny["iloscOdwiedzin"] + 1)
+    ];
+        
+    file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
+    $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
+    $odwiedziny = json_decode($odwiedzinyJson, true);
+
+    
+    echo("Witryna zostala odwiedzona: " . $odwiedziny["iloscOdwiedzin"] . " razy od " . $odwiedziny["pierwszyRaz"]);
+
     ?>
     <br><br>
 
@@ -94,28 +139,34 @@
         else $errors["kolorError"] = "";
 
 
+        $glosowaniePlik = "./glosowanie.json";
+        $glosowanieJson = file_get_contents($glosowaniePlik);
+        $glosowanieDane = json_decode($glosowanieJson, true);
 
         if(empty($errors["kolorError"])) {
-            $fileName = "./glosowanie/$kolor.txt";
-            $count = file_get_contents($fileName);
-            $wszystkie = file_get_contents("./glosowanie/wszystkie.txt");
-            if(empty($count)) file_put_contents($fileName, "0");
-            if(empty($wszystkie)) file_put_contents($fileName, "0");
+           
 
-            $ilosc = (int) $count;
-            $ilosc += 1;
-            file_put_contents($fileName, "");
-            file_put_contents($fileName, $ilosc);
-            $count = file_get_contents($fileName);
+            if(empty($glosowanieDane)) {
+                $glosowanieDane = [
+                    "czerwony" => "0",
+                    "zielony" => "0",
+                    "niebieski" => "0",
+                    "fioletowy" => "0",
+                    "czarny" => "0",
+                    "wszystkie" => "0"
+                ];
 
-            $wszystkieInt = (int) $wszystkie;
-            $wszystkieInt += 1;
-            file_put_contents("./glosowanie/wszystkie.txt", "");
-            file_put_contents("./glosowanie/wszystkie.txt", $wszystkieInt);
-            $wszystkie = file_get_contents("./glosowanie/wszystkie.txt");
+                file_put_contents($glosowaniePlik, json_encode($glosowanieDane, JSON_PRETTY_PRINT));
+                $glosowanieJson = file_get_contents($glosowaniePlik);
+                $glosowanieDane = json_decode($glosowanieJson, true);    
+            }
 
-            header("Location: " . $_SERVER["PHP_SELF"]);
-            exit();
+            $glosowanieDane[$kolor] = (int)$glosowanieDane[$kolor] + 1;
+            $glosowanieDane["wszystkie"] = (int)$glosowanieDane["wszystkie"] + 1;
+
+            file_put_contents($glosowaniePlik, json_encode($glosowanieDane, JSON_PRETTY_PRINT));
+            $glosowanieJson = file_get_contents($glosowaniePlik);
+            $glosowanieDane = json_decode($glosowanieJson, true);
         }
     }
     ?>
@@ -143,95 +194,60 @@
 
         <tr>
             <td>czerwony</td>
-            <td><?php echo(empty(file_get_contents("./glosowanie/czerwony.txt")) ? "0" : file_get_contents("./glosowanie/czerwony.txt")); ?></td>
+            <td><?php echo(isset($glosowanieDane) ? $glosowanieDane["czerwony"] : "0"); ?></td>
             <td>
                 <?php
-                $wszystkieGlosy = empty(file_get_contents("./glosowanie/wszystkie.txt")) ? "0" : file_get_contents("./glosowanie/wszystkie.txt");
-                $czerwonyGlosy = empty(file_get_contents("./glosowanie/czerwony.txt")) ? "0" : file_get_contents("./glosowanie/czerwony.txt");
-
-                if($czerwonyGlosy == "0" || $wszystkieGlosy == "0") {
-                    $procent = "0";
-                } else {
-                    $procent = round(((int)$czerwonyGlosy / (int)$wszystkieGlosy) * 100, 2);
+                if(isset($glosowanieDane)) {
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["czerwony"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
-
-                echo("$procent %");
                 ?>
             </td>
         </tr>
-
+        
         <tr>
             <td>zielony</td>
-            <td><?php echo(empty(file_get_contents("./glosowanie/zielony.txt")) ? "0" : file_get_contents("./glosowanie/zielony.txt")); ?></td>
+            <td><?php echo(isset($glosowanieDane) ? $glosowanieDane["zielony"] : "0"); ?></td>
             <td>
                 <?php
-                $wszystkieGlosy = empty(file_get_contents("./glosowanie/wszystkie.txt")) ? "0" : file_get_contents("./glosowanie/wszystkie.txt");
-                $zielonyGlosy = empty(file_get_contents("./glosowanie/zielony.txt")) ? "0" : file_get_contents("./glosowanie/zielony.txt");
-
-                if($zielonyGlosy == "0" || $wszystkieGlosy == "0") {
-                    $procent = "0";
-                } else {
-                    $procent = round(((int)$zielonyGlosy / (int)$wszystkieGlosy) * 100, 2);
+                if(isset($glosowanieDane)) {
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["zielony"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
-
-                echo("$procent %");
                 ?>
             </td>
         </tr>
 
         <tr>
             <td>niebieski</td>
-            <td><?php echo(empty(file_get_contents("./glosowanie/niebieski.txt")) ? "0" : file_get_contents("./glosowanie/niebieski.txt")); ?></td>
+            <td><?php echo(isset($glosowanieDane) ? $glosowanieDane["niebieski"] : "0"); ?></td>
             <td>
                 <?php
-                $wszystkieGlosy = empty(file_get_contents("./glosowanie/wszystkie.txt")) ? "0" : file_get_contents("./glosowanie/wszystkie.txt");
-                $niebieskiGlosy = empty(file_get_contents("./glosowanie/niebieski.txt")) ? "0" : file_get_contents("./glosowanie/niebieski.txt");
-
-                if($niebieskiGlosy == "0" || $wszystkieGlosy == "0") {
-                    $procent = "0";
-                } else {
-                    $procent = round(((int)$niebieskiGlosy / (int)$wszystkieGlosy) * 100, 2);
+                if(isset($glosowanieDane)) {
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["niebieski"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
-
-                echo("$procent %");
                 ?>
             </td>
         </tr>
 
         <tr>
             <td>fioletowy</td>
-            <td><?php echo(empty(file_get_contents("./glosowanie/fioletowy.txt")) ? "0" : file_get_contents("./glosowanie/fioletowy.txt")); ?></td>
+            <td><?php echo(isset($glosowanieDane) ? $glosowanieDane["fioletowy"] : "0"); ?></td>
             <td>
                 <?php
-                $wszystkieGlosy = empty(file_get_contents("./glosowanie/wszystkie.txt")) ? "0" : file_get_contents("./glosowanie/wszystkie.txt");
-                $fioletowyGlosy = empty(file_get_contents("./glosowanie/fioletowy.txt")) ? "0" : file_get_contents("./glosowanie/fioletowy.txt");
-
-                if($fioletowyGlosy == "0" || $wszystkieGlosy == "0") {
-                    $procent = "0";
-                } else {
-                    $procent = round(((int)$fioletowyGlosy / (int)$wszystkieGlosy) * 100, 2);
+                if(isset($glosowanieDane)) {
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["fioletowy"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
-
-                echo("$procent %");
                 ?>
             </td>
         </tr>
 
         <tr>
             <td>czarny</td>
-            <td><?php echo(empty(file_get_contents("./glosowanie/czarny.txt")) ? "0" : file_get_contents("./glosowanie/czarny.txt")); ?></td>
+            <td><?php echo(isset($glosowanieDane) ? $glosowanieDane["czarny"] : "0"); ?></td>
             <td>
                 <?php
-                $wszystkieGlosy = empty(file_get_contents("./glosowanie/wszystkie.txt")) ? "0" : file_get_contents("./glosowanie/wszystkie.txt");
-                $czarnyGlosy = empty(file_get_contents("./glosowanie/czarny.txt")) ? "0" : file_get_contents("./glosowanie/czarny.txt");
-
-                if($czarnyGlosy == "0" || $wszystkieGlosy == "0") {
-                    $procent = "0";
-                } else {
-                    $procent = round(((int)$czarnyGlosy / (int)$wszystkieGlosy) * 100, 2);
+                if(isset($glosowanieDane)) {
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["czarny"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
-
-                echo("$procent %");
                 ?>
             </td>
         </tr>
@@ -264,7 +280,7 @@
     </form>
 
     <?php
-    echo(isset($ip) ? $ip : "");
+        echo(isset($ip) ? $ip : "");
     ?>
 
     
