@@ -1,0 +1,61 @@
+span.errors {
+    color: red;
+}
+
+div#main {
+    width: 960px;
+    height: 720px;
+    margin: auto;
+}
+
+header, footer {
+    width: 960px;
+    height: 100px;
+    outline: 1px solid #000;
+    clear: both; 
+}
+
+table, tr, td, th {
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+
+nav {
+    float: left;
+    height: 520px;
+    width: 100px;
+    outline: 1px solid #000 ;
+}
+
+section {
+    float: left;
+    height: 520px;
+    width: 760px;
+    outline: 1px solid #000 ;
+}
+
+aside {
+    float: left;
+    height: 520px;
+    width: 100px;
+    outline: 1px solid #000 ;
+}
+
+form#mainForm {
+    outline: 1px solid #000;
+    width: 260px;
+    height: 515px;
+    float: left;
+    padding: 4px 0px 0px 4px;
+
+}
+
+table {
+    overflow: auto;
+}
+
+a {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
