@@ -50,12 +50,44 @@ form#mainForm {
 
 }
 
-table {
+div#dbOutput {
+    float: right;
+    width: 496px;
+    height: 520px;
     overflow: auto;
+    outline: 1px solid #000;
 }
 
 a {
     margin-left: 5px;
     margin-top: 5px;
 }
+
+table {
+    min-width: 496px;
+}
+
+td {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+h1 {
+    text-align: center;
+    line-height: 100px;
+}
+
+form#logowanieForm {
+    margin: 50px auto;
+    width: 250px;
+    
+}
+
+form#logoutForm {
+    width: 58px;
+    height: 20px;
+    margin: auto;
+}
+
+
 

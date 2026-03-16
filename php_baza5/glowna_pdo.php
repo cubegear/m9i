@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if(!isset($_SESSION["login"])) {
+    header("Location: index.php");
+    exit();
+}
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -20,7 +25,7 @@ function sanitizeInput($input) {
     $input = stripslashes($input);
     $input = htmlspecialchars($input);
     return $input;
-};
+}
 
 $errors = [];
 $formMessage = "";
@@ -39,17 +44,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["mainFormSubmit"])) {
     if(empty($wiek)) $errors["wiekError"] = "Pole nie może być puste!";
     if(empty($plec)) $errors["plecError"] = "Pole musi być wybrane!";
     if(empty($miasto)) $errors["miastoError"] = "Pole nie może być puste!";
-    if(empty($hobby)) $errors["hobbyError"] = "Conajmnijej jedno pole musi być wybrane!!";
+    if(!isset($_POST["hobby"]) || empty($_POST["hobby"])) $errors["hobbyError"] = "Conajmniej jedno pole musi być wybrane!!";
     if(empty($wyksztalcenie) || $wyksztalcenie == "wybierz") $errors["wyksztalcenieError"] = "Pole musi być wybrane!";
 
 
-    if(empty($errors["imieError"]) && !preg_match('/^[A-ZĘÓĄŚŁŻŹĆ][a-zęóąśłżźć]*$/', $imie))
+    if(!isset($errors["imieError"]) && !preg_match('/^[A-ZĘÓĄŚŁŻŹĆ][a-zęóąśłżźć]*$/', $imie))
         $errors["imieError"] = "Pole musi się składać tylko z liter(pierwsza duża reszta małe)!";
-    if(empty($errors["nazwiskoError"]) && !preg_match('/^[A-ZĘÓĄŚŁŻŹĆ][a-zęóąśłżźć]*$/', $nazwisko))
+    if(!isset($errors["nazwiskoError"]) && !preg_match('/^[A-ZĘÓĄŚŁŻŹĆ][a-zęóąśłżźć]*$/', $nazwisko))
         $errors["nazwiskoError"] = "Pole musi się składać tylko z liter(pierwsza duża reszta małe)!";
-    if(empty($errors["wiekError"]) && !preg_match('/^\d{1,3}$/',$wiek))
+    if(!isset($errors["wiekError"]) && !preg_match('/^\d{1,3}$/',$wiek))
         $errors["wiekError"] = "Pole musi się składać tylko z cyfr(max 3)!";
-    if(empty($errors["miastoError"]) && !preg_match('/^[A-ZĘÓĄŚŁŻŹĆ][a-zęóąśłżźć]*$/', $miasto))
+    if(!isset($errors["miastoError"]) && !preg_match('/^[A-ZĘÓĄŚŁŻŹĆ][a-zęóąśłżźć]*$/', $miasto))
         $errors["miastoError"] = "Pole musi się składać tylko z liter(pierwsza duża reszta małe)!";
 
     if(empty($errors)) {
@@ -59,7 +64,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["mainFormSubmit"])) {
             $stmt = $conn->prepare($sql);
             $stmt->execute([$imie, $nazwisko, $wiek_int, $plec, $miasto, $hobby, $wyksztalcenie]);
 
-            $stmt = null;
 
             $_SESSION["formMessage"] = "<span style='color:green'>Pomyślnie dodano rekord</span>";
             header("Location: " . $_SERVER["PHP_SELF"]);
@@ -86,12 +90,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["usunFormSubmit"])) {
         $stmt->execute([$imieUsun, $nazwiskoUsun, $wiekUsun_int, $plecUsun, $miastoUsun, $hobbyUsun, $wyksztalcenieUsun]);
 
         if($stmt->rowCount() == 1) {
-            $stmt = null;
             $_SESSION["formMessage"] = "<span style='color:green'>Pomyślnie usunięto rekord</span>";
             header("Location: " . $_SERVER["PHP_SELF"]);
             exit();
         } else {
-            $stmt = null;
             $_SESSION["formMessage"] = "<span style='color:red'>Nie znaleziono </span>";
             header("Location: " . $_SERVER["PHP_SELF"]);
             exit();
@@ -100,7 +102,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["usunFormSubmit"])) {
         
 
     } catch(PDOException $e) {
-        die("Wystąpił problem z wykonaniem zapytania!");
+        die("Wystąpił problem z wykonaniem zapytania! " . $e->getMessage());
     }
        
 }
@@ -120,6 +122,12 @@ try {
 if(isset($_SESSION["formMessage"])) {
     $formMessage = $_SESSION["formMessage"];
     unset($_SESSION["formMessage"]);
+}
+
+if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logoutFormSubmit"])) {
+    unset($_SESSION["login"]);
+    header("Location: index.php");
+    exit();
 }
 
 ?>
@@ -179,7 +187,7 @@ if(isset($_SESSION["formMessage"])) {
                 <br>
                 <input type="checkbox" name="hobby[]" id="jazdaRowerem" value="jazdaRowerem" <?php echo(isset($_POST["hobby"]) && in_array("jazdaRowerem", $_POST["hobby"]) ? "checked" : ""); ?>>jazdaRowerem
                 <br>
-                <input type="checkbox" name="hobby[]" id="czytanieKsiazekd" value="czytanieKsiazekd" <?php echo(isset($_POST["hobby"]) && in_array("czytanieKsiazekd", $_POST["hobby"]) ? "checked" : ""); ?>>czytanieKsiazekd
+                <input type="checkbox" name="hobby[]" id="czytanieKsiazek" value="czytanieKsiazek" <?php echo(isset($_POST["hobby"]) && in_array("czytanieKsiazek", $_POST["hobby"]) ? "checked" : ""); ?>>czytanieKsiazek
                 <br>
                 <input type="checkbox" name="hobby[]" id="granieWSapera" value="granieWSapera" <?php echo(isset($_POST["hobby"]) && in_array("granieWSapera", $_POST["hobby"]) ? "checked" : ""); ?>>granieWSapera
                 <br>
@@ -198,61 +206,73 @@ if(isset($_SESSION["formMessage"])) {
                 <br><br>
 
                 <input type="submit" value="Wyślij formularz" name="mainFormSubmit">
-                <input type="reset" value="Wyczyść formularz">
-                <?php echo(isset($formMessage) ? $formMessage : ""); ?>
+                <input type="button" value="Wyczyść formularz" onclick="return resetForm();">
+                <span id="formMessage"><?php echo(isset($formMessage) ? $formMessage : ""); ?></span>
+                
             </form>
 
-            <table>
-                <tr>
-                    <th>Imię</th>
-                    <th>Nazwisko</th>
-                    <th>Wiek</th>
-                    <th>Płeć</th>
-                    <th>Miasto</th>
-                    <th>Hobby</th>
-                    <th>Wykształcenie</th>
-                    <th>Usuń</th>
-                </tr>
-                <?php
-                while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                    echo("<tr>");
-                    echo("<td>{$row['imie']}</td>");
-                    echo("<td>{$row['nazwisko']}</td>");
-                    echo("<td>{$row['wiek']}</td>");
-                    echo("<td>{$row['plec']}</td>");
-                    echo("<td>{$row['miasto']}</td>");
-                    echo("<td>{$row['hobby']}</td>");
-                    echo("<td>{$row['wyksztalcenie']}</td>");
-                    echo("<td><form name='usunForm' id='usunForm' method='post'>");
-                    echo("<input type='hidden' value='" . $row['imie'] . "' name='imieUsun'>");
-                    echo("<input type='hidden' value='" . $row['nazwisko'] . "' name='nazwiskoUsun'>");
-                    echo("<input type='hidden' value='" . $row['wiek'] . "' name='wiekUsun'>");
-                    echo("<input type='hidden' value='" . $row['plec'] . "' name='plecUsun'>");
-                    echo("<input type='hidden' value='" . $row['miasto'] . "' name='miastoUsun'>");
-                    echo("<input type='hidden' value='" . $row['hobby'] . "' name='hobbyUsun'>");
-                    echo("<input type='hidden' value='" . $row['wyksztalcenie'] . "' name='wyksztalcenieUsun'>");
-                    echo("<input type='submit' value='Usuń' name='usunFormSubmit' onclick='return confirm(\"Czy jesteś pewny?\")'>");
-                    echo("</form></td>");
-                    echo("</tr>");
-                }
-                $conn = null;
-                ?>
-            </table>
+            <div id="dbOutput">
+                <table>
+                    <tr>
+                        <th>Imię</th>
+                        <th>Nazwisko</th>
+                        <th>Wiek</th>
+                        <th>Płeć</th>
+                        <th>Miasto</th>
+                        <th>Hobby</th>
+                        <th>Wykształcenie</th>
+                        <th>Usuń</th>
+                    </tr>
+                    <?php
+                    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                        echo("<tr>");
+                        echo("<td>" . htmlspecialchars($row['imie']) . "</td>");
+                        echo("<td>" . htmlspecialchars($row['nazwisko']) . "</td>");
+                        echo("<td>" . htmlspecialchars($row['wiek']) . "</td>");
+                        echo("<td>" . htmlspecialchars($row['plec']) . "</td>");
+                        echo("<td>" . htmlspecialchars($row['miasto']) . "</td>");
+                        echo("<td>" . htmlspecialchars($row['hobby']) . "</td>");
+                        echo("<td>" . htmlspecialchars($row['wyksztalcenie']) . "</td>");
+                        echo("<td><form name='usunForm' id='usunForm' method='post'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['imie']) . "' name='imieUsun'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['nazwisko']) . "' name='nazwiskoUsun'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['wiek']) . "' name='wiekUsun'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['plec']) . "' name='plecUsun'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['miasto']) . "' name='miastoUsun'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['hobby']) . "' name='hobbyUsun'>");
+                        echo("<input type='hidden' value='" . htmlspecialchars($row['wyksztalcenie']) . "' name='wyksztalcenieUsun'>");
+                        echo("<input type='submit' value='Usuń' name='usunFormSubmit' onclick='return confirm(\"Czy jesteś pewny?\")'>");
+                        echo("</form></td>");
+                        echo("</tr>");
+                    }
+                    $conn = null;
+                    ?>
+                </table>
+            </div>
+            
         </section>
 
         <aside></aside>
 
-        <footer></footer>
+        <footer>
+            <form action="" method="post" name="logoutForm" id="logoutForm">
+                <input type="submit" value="Wyloguj" name="logoutFormSubmit">
+            </form>
+        </footer>
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            alert("Przypominamy o konieczności wypełnienia formularza!");
+        });
+
         function getId(id) {
             return document.getElementById(id);
         };
 
         function firstLetterUp() {
             this.value = this.value.replace(/\P{L}/gu, "");
-            this.value = this.value.slice(0,1).toUpperCase() + this.value.slice(1,).toLowerCase();
+            this.value = this.value.slice(0,1).toUpperCase() + this.value.slice(1).toLowerCase();
         };
 
         getId("imie").addEventListener("input", firstLetterUp);
@@ -263,6 +283,49 @@ if(isset($_SESSION["formMessage"])) {
             this.value = this.value.replace(/\D/g, "");
             this.value = this.value.slice(0,3);
         });
+
+        function disableForm(state) {
+            getId('male').disabled = state;
+            getId('female').disabled = state;
+            getId('wiek').disabled = state;
+            getId('miasto').disabled = state;
+            getId('wyksztalcenie').disabled = state;
+            getId('jazdaRowerem').disabled = state;
+            getId('czytanieKsiazek').disabled = state;
+            getId('granieWSapera').disabled = state;
+        }
+
+        function checkFormState() {
+            if(getId("imie").value == "" || getId("nazwisko").value == "") {
+                disableForm(true);
+                getId("formMessage").innerHTML = "<span style='color: #fc9b25;'>Proszę uzupełnić pola Imię i Nazwisko aby odblokować resztę formularza!</span>";
+            } else {
+                disableForm(false);
+                getId("formMessage").innerHTML = "";
+            }
+        }
+
+        checkFormState();
+        setInterval(checkFormState, 500);
+
+
+        function resetForm() {
+            getId("imie").value = "";
+            getId("nazwisko").value = "";
+            getId("wiek").value = "";
+            getId("miasto").value = "";
+            getId('male').checked = false;
+            getId('female').checked = false;
+            getId('jazdaRowerem').checked = false;
+            getId('czytanieKsiazek').checked = false;
+            getId('granieWSapera').checked = false;
+            getId("wyksztalcenie").value = "wybierz";
+            let errorSpans = document.querySelectorAll('.errors');
+            errorSpans.forEach(span => span.innerHTML = '');
+            getId("formMessage").innerHTML = '';
+            checkFormState();
+            return false;
+        }
     </script>
 </body>
 </html>
