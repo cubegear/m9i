@@ -8,123 +8,37 @@
         span.error {
             color: red;
         }
+        
+        table, tr, td, th {
+            border: 1px solid #000;
+            border-collapse: collapse;
+        }
     </style>
 </head>
 <body>
     <h1>PLIKI</h1>
     <?php
     $errors = [];
-    /*
-    $file = fopen("./pierwszyRaz.txt", "a+");
-
-    rewind($file);
-
-    $content = fread($file, 100);
-
     
-
-    if(empty($content)) {
-        $date = Date("d-m-Y");
-        fwrite($file, $date);
-    }
-    
-    
-    rewind($file);
-
-    $pierwszyRaz = fread($file, 100);
-    fclose($file);
-
-    $file = fopen("./iloscOdwiedzin.txt", "a+");
-
-    rewind($file);
-
-    $content = fread($file, 100);
-
-    if(empty($content)) {
-        fwrite($file, "1");
-        rewind($file);
-        $iloscOdwiedzin = fread($file, 100);
-    } else {
-        rewind($file);
-        file_put_contents("./iloscOdwiedzin.txt", "");
-        (int)$content += 1;
-        fwrite($file, (string) $content);
-
-        rewind($file);
-
-        $iloscOdwiedzin = fread($file, 100);
-
-    }
-
-    ?>
-
-    <br>
-    <?php
-    echo($pierwszyRaz);
-    echo("<br>");
-    echo($iloscOdwiedzin);
-    */
-
-    $odwiedzinyDane = [
-        "pierwszyRaz" => "",
-        "iloscOdwiedzin" => ""
-    ];
-
     $odwiedzinyPlik = "./odwiedziny.json";
-    $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
-    $odwiedziny = json_decode($odwiedzinyJson, true);
+    $odwiedziny = [];
 
-    
-
-    if(empty($odwiedziny)) {
-        $odwiedzinyDane = [
-            "pierwszyRaz" => Date("d-m-Y"),
-            "iloscOdwiedzin" => "1"
-        ];
-        
-        file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
+    if (file_exists($odwiedzinyPlik)) {
         $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
         $odwiedziny = json_decode($odwiedzinyJson, true);
     }
 
-    
-    
-    if(empty($odwiedziny["pierwszyRaz"])) {
-        $odwiedzinyDane = [
-            "pierwszyRaz" => Date("d-m-Y"),
-            "iloscOdwiedzin" => $odwiedziny["iloscOdwiedzin"]
+    if (empty($odwiedziny) || !isset($odwiedziny['pierwszyRaz'])) {
+        $odwiedziny = [
+            "pierwszyRaz" => date("d-m-Y"),
+            "iloscOdwiedzin" => 0
         ];
-        
-        file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
-        $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
-        $odwiedziny = json_decode($odwiedzinyJson, true);
     }
 
-    
+    $odwiedziny["iloscOdwiedzin"]++;
+    file_put_contents($odwiedzinyPlik, json_encode($odwiedziny, JSON_PRETTY_PRINT));
 
-    if(empty($odwiedziny["iloscOdwiedzin"])) {
-        $odwiedzinyDane = [
-            "pierwszyRaz" => $odwiedziny["pierwszyRaz"],
-            "iloscOdwiedzin" => "1"
-        ];
-        
-        file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
-        $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
-        $odwiedziny = json_decode($odwiedzinyJson, true);
-    }
-
-
-    $odwiedzinyDane = [
-        "pierwszyRaz" => $odwiedziny["pierwszyRaz"],
-        "iloscOdwiedzin" => ((int)$odwiedziny["iloscOdwiedzin"] + 1)
-    ];
-        
-    file_put_contents($odwiedzinyPlik, json_encode($odwiedzinyDane, JSON_PRETTY_PRINT));
-    $odwiedzinyJson = file_get_contents($odwiedzinyPlik);
-    $odwiedziny = json_decode($odwiedzinyJson, true);
-
-    
-    echo("Witryna zostala odwiedzona: " . $odwiedziny["iloscOdwiedzin"] . " razy od " . $odwiedziny["pierwszyRaz"]);
+    echo "Witryna została odwiedzona: " . $odwiedziny["iloscOdwiedzin"] . " razy od " . $odwiedziny["pierwszyRaz"];
 
     ?>
     <br><br>
@@ -132,41 +46,57 @@
     <h3>Głosowanie</h3>
 
     <?php
-    if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["glosowanieFormSubmit"])) {
-        $kolor = isset($_POST["kolor"]) ? $_POST["kolor"] : "" ;
-
-        if(empty($kolor)) $errors["kolorError"] = "Proszę uzupełnić pole przed wysłaniem!";
-        else $errors["kolorError"] = "";
-
-
-        $glosowaniePlik = "./glosowanie.json";
+    $glosowaniePlik = "./glosowanie.json";
+    if (file_exists($glosowaniePlik)) {
         $glosowanieJson = file_get_contents($glosowaniePlik);
         $glosowanieDane = json_decode($glosowanieJson, true);
+    }
+    
+    if(empty($glosowanieDane)) {
+        $glosowanieDane = [
+            "czerwony" => 0,
+            "zielony" => 0,
+            "niebieski" => 0,
+            "fioletowy" => 0,
+            "czarny" => 0,
+            "wszystkie" => 0
+        ];
+    }
 
-        if(empty($errors["kolorError"])) {
-           
+    if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["glosowanieFormSubmit"])) {
+        $kolor = isset($_POST["kolor"]) ? $_POST["kolor"] : "" ;
+        $errors["kolorError"] = "";
 
-            if(empty($glosowanieDane)) {
-                $glosowanieDane = [
-                    "czerwony" => "0",
-                    "zielony" => "0",
-                    "niebieski" => "0",
-                    "fioletowy" => "0",
-                    "czarny" => "0",
-                    "wszystkie" => "0"
-                ];
-
-                file_put_contents($glosowaniePlik, json_encode($glosowanieDane, JSON_PRETTY_PRINT));
-                $glosowanieJson = file_get_contents($glosowaniePlik);
-                $glosowanieDane = json_decode($glosowanieJson, true);    
+        if(empty($kolor)) {
+            $errors["kolorError"] = "Proszę uzupełnić pole przed wysłaniem!";
+        } else {
+            $dozwoloneKolory = ['czerwony', 'zielony', 'niebieski', 'fioletowy', 'czarny'];
+            if (!in_array($kolor, $dozwoloneKolory)) {
+                $errors["kolorError"] = "Nieprawidłowy kolor!";
             }
+        }
 
-            $glosowanieDane[$kolor] = (int)$glosowanieDane[$kolor] + 1;
-            $glosowanieDane["wszystkie"] = (int)$glosowanieDane["wszystkie"] + 1;
 
-            file_put_contents($glosowaniePlik, json_encode($glosowanieDane, JSON_PRETTY_PRINT));
+        if (file_exists($glosowaniePlik)) {
             $glosowanieJson = file_get_contents($glosowaniePlik);
             $glosowanieDane = json_decode($glosowanieJson, true);
+        }
+        
+        if(empty($glosowanieDane)) {
+            $glosowanieDane = [
+                "czerwony" => 0,
+                "zielony" => 0,
+                "niebieski" => 0,
+                "fioletowy" => 0,
+                "czarny" => 0,
+                "wszystkie" => 0
+            ];
+        }
+
+        if(empty($errors["kolorError"])) {
+            $glosowanieDane[$kolor] += 1;
+            $glosowanieDane["wszystkie"] += 1;
+            file_put_contents($glosowaniePlik, json_encode($glosowanieDane, JSON_PRETTY_PRINT));
         }
     }
     ?>
@@ -198,7 +128,7 @@
             <td>
                 <?php
                 if(isset($glosowanieDane)) {
-                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["czerwony"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0 %" : round(((int)$glosowanieDane["czerwony"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
                 ?>
             </td>
@@ -210,7 +140,7 @@
             <td>
                 <?php
                 if(isset($glosowanieDane)) {
-                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["zielony"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0 %" : round(((int)$glosowanieDane["zielony"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
                 ?>
             </td>
@@ -222,7 +152,7 @@
             <td>
                 <?php
                 if(isset($glosowanieDane)) {
-                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["niebieski"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0 %" : round(((int)$glosowanieDane["niebieski"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
                 ?>
             </td>
@@ -234,7 +164,7 @@
             <td>
                 <?php
                 if(isset($glosowanieDane)) {
-                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["fioletowy"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
+                    echo($glosowanieDane["wszystkie"] == "0" ? "0 %" : round(((int)$glosowanieDane["fioletowy"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
                 ?>
             </td>
@@ -246,7 +176,7 @@
             <td>
                 <?php
                 if(isset($glosowanieDane)) {
-                    echo($glosowanieDane["wszystkie"] == "0" ? "0" : round(((int)$glosowanieDane["czarny"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
+                    echo($glosowanieDane["wszystkie"] == 0 ? "0 %" : round(((int)$glosowanieDane["czarny"] / (int)$glosowanieDane["wszystkie"]) * 100, 2) . " %");
                 }
                 ?>
             </td>
@@ -261,13 +191,18 @@
 
     <?php
     if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["hostIpFormSubmit"])) {
-        $host = isset($_POST["host"]) ? $_POST["host"] : "" ;
+        $host = isset($_POST["host"]) ? trim($_POST["host"]) : "" ;
+        $errors["hostError"] = "";
+
+        $ip = "";
 
         if(empty($host)) $errors["hostError"] = "Proszę uzupełnić pole przed wysłaniem!";
-        else $errors["hostError"] = "";
 
         if(empty($errors["hostError"])) {
             $ip = gethostbyname($host);
+            if(!filter_var($ip, FILTER_VALIDATE_IP)) {
+                $ip = "<span style='color:red;'>Nie znaleziono hosta o tym adresie!</span>";
+            }
         }
     }
     ?>
@@ -283,8 +218,5 @@
         echo(isset($ip) ? $ip : "");
     ?>
 
-    
-
-    
 </body>
 </html>
