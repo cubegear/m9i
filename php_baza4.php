@@ -15,65 +15,16 @@ if($conn->connect_error) {
 function sanitizeInput($input) {
     $input = trim($input);
     $input = stripslashes($input);
-    $input = htmlspecialchars($input);
     return $input;
 }
 
 $errors = [];
 $formMessage = "";
-/*
-if(isset($_GET["delete"])) {
-    $imie = isset($_GET["imie"]) ? urldecode($_GET["imie"]) : "";
-    $wiek = isset($_GET["wiek"]) ? urldecode($_GET["wiek"]) : "";
-    $plec = isset($_GET["plec"]) ? urldecode($_GET["plec"]) : "";
-    $telefon = isset($_GET["telefon"]) ? urldecode($_GET["telefon"]) : "";
-    $email = isset($_GET["email"]) ? urldecode($_GET["email"]) : "";
-    $wyksztalcenie = isset($_GET["wyksztalcenie"]) ? urldecode($_GET["wyksztalcenie"]) : "";
-    $dodatkowe = isset($_GET["dodatkowe"]) ? urldecode($_GET["dodatkowe"]) : "";
-    $kwalifikacje = isset($_GET["kwalifikacje"]) ? urldecode($_GET["kwalifikacje"]) : "";
-
-    
-    $imie =  sanitizeInput($imie);
-    $wiek =  sanitizeInput($wiek);
-    $plec =  sanitizeInput($plec);
-    $telefon = sanitizeInput($telefon);
-    $email = sanitizeInput($email);
-    $wyksztalcenie = sanitizeInput($wyksztalcenie);
-    $dodatkowe = sanitizeInput($dodatkowe);
-    $kwalifikacje = sanitizeInput($kwalifikacje);
-    
 
 
-    $query = "DELETE FROM osoba WHERE 
-            imie = ? AND wiek = ? AND plec = ? AND 
-            telefon = ? AND email = ? AND wyksztalcenie = ? AND 
-            dodatkowe = ? AND kwalifikacje = ? LIMIT 1";
-
-
-    $stmt = $conn->prepare($query);
-
-    $wiekInt = (int)$wiek;
-
-    $stmt->bind_param("sissssss", $imie, $wiekInt, $plec, $telefon, $email, $wyksztalcenie, $dodatkowe, $kwalifikacje);
-    
-    if($stmt->execute()) {
-        $_SESSION['formMessage'] = "<span style='color: green;'>Rekord został usunięty</span>";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        $_SESSION["formMessage"] = "<span style='color: red;'>Wystąpił błąd podczas usuwania rekordu</span>";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
-
-    $stmt->close();      
-}
-*/
-
-
-//
 if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["usun"])) {
     $imieDelete = isset($_POST["imieDelete"]) ? sanitizeInput($_POST["imieDelete"]) : "";
+    $nazwiskoDelete = isset($_POST["nazwiskoDelete"]) ? sanitizeInput($_POST["nazwiskoDelete"]) : "";
     $wiekDelete = isset($_POST["wiekDelete"]) ? sanitizeInput($_POST["wiekDelete"]) : "";
     $plecDelete = isset($_POST["plecDelete"]) ? sanitizeInput($_POST["plecDelete"]) : "";
     $telefonDelete = isset($_POST["telefonDelete"]) ? sanitizeInput($_POST["telefonDelete"]) : "";
@@ -84,7 +35,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["usun"])) {
 
 
     $query = "DELETE FROM osoba WHERE 
-            imie = ? AND wiek = ? AND plec = ? AND 
+            imie = ? AND nazwisko = ? AND wiek = ? AND plec = ? AND 
             telefon = ? AND email = ? AND wyksztalcenie = ? AND 
             dodatkowe = ? AND kwalifikacje = ? LIMIT 1";
 
@@ -93,23 +44,24 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["usun"])) {
 
     $wiekIntDelete = (int)$wiekDelete;
 
-    $stmt->bind_param("sissssss", $imieDelete, $wiekIntDelete, $plecDelete, $telefonDelete, $emailDelete, $wyksztalcenieDelete, $dodatkoweDelete, $kwalifikacjeDelete);
+    $stmt->bind_param("ssissssss", $imieDelete, $nazwiskoDelete ,$wiekIntDelete, $plecDelete, $telefonDelete, $emailDelete, $wyksztalcenieDelete, $dodatkoweDelete, $kwalifikacjeDelete);
     
     if($stmt->execute()) {
+        $stmt->close();
         $_SESSION['formMessage'] = "<span style='color: green;'>Rekord został usunięty</span>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } else {
+        $stmt->close();
         $_SESSION["formMessage"] = "<span style='color: red;'>Wystąpił błąd podczas usuwania rekordu</span>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
-
-    $stmt->close();
 }
 
 if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["wyslij"])) {
     $imie = isset($_POST["imie"]) ? sanitizeInput($_POST["imie"]) : "";
+    $nazwisko = isset($_POST["nazwisko"]) ? sanitizeInput($_POST["nazwisko"]) : ""; 
     $wiek = isset($_POST["wiek"]) ? sanitizeInput($_POST["wiek"]) : "";
     $plec = isset($_POST["plec"]) ? sanitizeInput($_POST["plec"]) : "";
     $telefon = isset($_POST["telefon"]) ? sanitizeInput($_POST["telefon"]) : "";
@@ -120,6 +72,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["wyslij"])) {
 
     $errors = [
         "imieError" => "",
+        "nazwiskoError" => "",
         "wiekError" => "",
         "plecError" => "",
         "telefonError" => "",
@@ -130,6 +83,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["wyslij"])) {
     ];
 
     if(empty($imie)) $errors["imieError"] = "Pole Imie nie może być puste!";
+    if(empty($nazwisko)) $errors["nazwiskoError"] = "Pole Nazwisko nie może być puste!";
     if(empty($wiek)) $errors["wiekError"] = "Pole Wiek nie może być puste lub równe zero!";
     if(empty($plec)) $errors["plecError"] = "Pole Płeć musi być wybrane!";
     if(empty($telefon)) $errors["telefonError"] = "Pole Numer telefonu nie może być puste!";
@@ -139,48 +93,50 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["wyslij"])) {
     if(empty($kwalifikacje)) $errors["kwalifikacjeError"] = "Pole Kwalifikacje musi być wybrane!";
 
 
-    if(empty($errors['imieError']) && !preg_match('/^\p{L}$/u', $imie))
+    if(empty($errors['imieError']) && !preg_match('/^\p{Lu}\p{Ll}+$/u', $imie))
         $errors['imieError'] = "Pole Imie musi się składać tylko z liter i musi się zaczynać z dużej litery (reszta małe)!";
+    if(empty($errors['nazwiskoError']) && !preg_match('/^\p{Lu}\p{Ll}+$/u', $nazwisko))
+        $errors['nazwiskoError'] = "Pole Nazwisko musi się składać tylko z liter i musi się zaczynać z dużej litery (reszta małe)!";
     if(empty($errors['wiekError']) && !preg_match('/^[0-9]{1,3}$/', $wiek))
         $errors['wiekError'] = "Pole Wiek musi się składać tylko z cyfr i może być maksymalnie 3 cyframi!";
     if(empty($errors['telefonError']) && !preg_match('/^[0-9]{3}-[0-9]{3}-[0-9]{3}$/', $telefon))
         $errors['telefonError'] = "Pole Telefon musi się składać tylko z cyfr i być w formacie XXX-XXX-XXX (np. 123-456-789)!";
     if(empty($errors['emailError']) && !filter_var($email, FILTER_VALIDATE_EMAIL))
-        $errors['emailError'] = "Pole Email musi się być w odpowiednim formacie (np. example@domain.com)!";
+        $errors['emailError'] = "Pole Email musi być w odpowiednim formacie (np. example@domain.com)!";
 
 
     if(empty(implode("", $errors))) {
-        $query = "INSERT INTO osoba (imie, wiek, plec, telefon, email, wyksztalcenie, dodatkowe, kwalifikacje) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        $query = "INSERT INTO osoba (imie, nazwisko, wiek, plec, telefon, email, wyksztalcenie, dodatkowe, kwalifikacje) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         $stmt = $conn->prepare($query);
 
         $wiekInt = (int)$wiek;
 
-        $stmt->bind_param("sissssss", $imie, $wiekInt, $plec, $telefon, $email, $wyksztalcenie, $dodatkowe, $kwalifikacje);
+        $stmt->bind_param("ssissssss", $imie, $nazwisko, $wiekInt, $plec, $telefon, $email, $wyksztalcenie, $dodatkowe, $kwalifikacje);
 
     
 
         if($stmt->execute()) {
+            $stmt->close();
             $_SESSION['formMessage'] = "<span style='color: green;'>Rekord został dodany</span>";
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
         } else {
+            $stmt->close();
             $_SESSION['formMessage'] = "<span style='color: red;'>Wystąpił błąd podczas dodawaniu rekordu</span>";
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
         }
-
-        $stmt->close();
     }
 }
 
-if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["imieToDelete"])) {
+if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["deleteRow"])) {
     $imieToDelete = isset($_POST["imieToDelete"]) ? sanitizeInput($_POST["imieToDelete"]) : "";
 
     if(empty($imieToDelete)) $errors["imieToDeleteError"] = "Należy uzupełnić pole!";
 
-    if(empty($errors["imieToDeleteError"]) && !preg_match('/^\p{L}*$/', $imieToDelete))
-        $errors["imieToDeleteError"] = "Pole musi się skłądać tylko z liter i zaczynać się z dużej litery (reszta małe)!";
+    if(empty($errors["imieToDeleteError"]) && !preg_match('/^\p{Lu}\p{Ll}+$/u', $imieToDelete))
+        $errors["imieToDeleteError"] = "Pole musi się składać tylko z liter i zaczynać się z dużej litery (reszta małe)!";
 
     if(empty($errors["imieToDeleteError"])) {
         $query = "DELETE FROM osoba WHERE imie = ? LIMIT 1;";
@@ -190,23 +146,24 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["imieToDelete"])) {
         $stmt->bind_param("s", $imieToDelete);
 
         if($stmt->execute()) {
-            if($conn->affected_rows == 1) {
+            if($stmt->affected_rows == 1) {
+                $stmt->close();
                 $_SESSION['formMessage'] = "<span style='color: green;'>Rekord został Usunięty</span>";
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
             } else {
-                $_SESSION['formMessage'] = "<span style='color: red;'>Nie znaleziono rekordu z tym Imieiem</span>";
+                $stmt->close();
+                $_SESSION['formMessage'] = "<span style='color: red;'>Nie znaleziono rekordu z tym Imieniem</span>";
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
             }
             
         } else {
+            $stmt->close();
             $_SESSION['formMessage'] = "<span style='color: red;'>Wystąpił błąd podczas usuwania rekordu</span>";
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
         }
-
-        $stmt->close();
     }
 }
 
@@ -217,7 +174,7 @@ if(isset($_SESSION["formMessage"])) {
 }
 
 
-$allowedSort = ["imie", "wiek"];
+$allowedSort = ["imie", "nazwisko", "wiek"];
 
 $sort = isset($_GET["sort"]) && in_array($_GET["sort"], $allowedSort) ? $_GET["sort"] : "imie";
 
@@ -250,16 +207,24 @@ if(!$result) {
     </style>
 </head>
 <body>
+    <h3>Dodawanie rekordów</h3>
     <form action="" method="post">
         <label for="imie">Imię: </label>
-        <input type="text" id="imie" name="imie" value="<?php echo(isset($_POST['imie']) ? $_POST['imie'] : ''); ?>">
+        <input type="text" id="imie" name="imie" value="<?php echo(isset($_POST['imie']) ? htmlspecialchars($_POST['imie']) : ''); ?>">
         <button type="button" onclick="clearInput('imie')">Wyczyść pole</button>
         <span class="error"><?php echo(isset($errors['imieError']) ? $errors['imieError'] : '');?></span>
 
         <br><br>
 
+        <label for="nazwisko">Nazwisko: </label>
+        <input type="text" id="nazwisko" name="nazwisko" value="<?php echo(isset($_POST['nazwisko']) ? htmlspecialchars($_POST['nazwisko']) : ''); ?>">
+        <button type="button" onclick="clearInput('nazwisko')">Wyczyść pole</button>
+        <span class="error"><?php echo(isset($errors['nazwiskoError']) ? $errors['nazwiskoError'] : '');?></span>
+
+        <br><br>
+
         <label for="wiek">Wiek: </label>
-        <input type="text" id="wiek" name="wiek" value="<?php echo(isset($_POST['wiek']) ? $_POST['wiek'] : ''); ?>">
+        <input type="text" id="wiek" name="wiek" value="<?php echo(isset($_POST['wiek']) ? htmlspecialchars($_POST['wiek']) : ''); ?>">
         <button type="button" onclick="clearInput('wiek')">Wyczyść pole</button>
         <span class="error"><?php echo(isset($errors['wiekError']) ? $errors['wiekError'] : '');?></span>
         <br><br>
@@ -275,14 +240,14 @@ if(!$result) {
         <br><br>
 
         <label for="telefon">Numer Telefonu: </label>
-        <input type="text" id="telefon" name="telefon" value="<?php echo(isset($_POST['telefon']) ? $_POST['telefon'] : ''); ?>">
+        <input type="text" id="telefon" name="telefon" value="<?php echo(isset($_POST['telefon']) ? htmlspecialchars($_POST['telefon']) : ''); ?>">
         <button type="button" onclick="clearInput('telefon')">Wyczyść pole</button>
         <span class="error"><?php echo(isset($errors['telefonError']) ? $errors['telefonError'] : '');?></span>
         
         <br><br>
         
         <label for="email">Email: </label>
-        <input type="text" id="email" name="email" value="<?php echo(isset($_POST['email']) ? $_POST['email'] : ''); ?>">
+        <input type="text" id="email" name="email" value="<?php echo(isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''); ?>">
         <button type="button" onclick="clearInput('email')">Wyczyść pole</button>
         <span class="error"><?php echo(isset($errors['emailError']) ? $errors['emailError'] : '');?></span>
 
@@ -304,9 +269,9 @@ if(!$result) {
         <label for="dodatkowe[]">Dodatkowe: </label>
         <br>
         <select name="dodatkowe[]" id="dodatkowe" multiple>
-            <option value="karnet" <?php echo(isset($_POST['dodatkowe']) && in_array('karnet', $_POST['dodatkowe']) ? 'selected' : ''); ?>>karnet na basen</option>
-            <option value="kawa" <?php echo(isset($_POST['dodatkowe']) && in_array('kawa', $_POST['dodatkowe']) ? 'selected' : ''); ?>>kawa w pracy</option>
-            <option value="samochod" <?php echo(isset($_POST['dodatkowe']) && in_array('samochod', $_POST['dodatkowe']) ? 'selected' : ''); ?>>samochód służbowy</option>
+            <option value="karnet" id="karnet" <?php echo(isset($_POST['dodatkowe']) && in_array('karnet', $_POST['dodatkowe']) ? 'selected' : ''); ?>>karnet na basen</option>
+            <option value="kawa" id="kawa" <?php echo(isset($_POST['dodatkowe']) && in_array('kawa', $_POST['dodatkowe']) ? 'selected' : ''); ?>>kawa w pracy</option>
+            <option value="samochod" id="samochod" <?php echo(isset($_POST['dodatkowe']) && in_array('samochod', $_POST['dodatkowe']) ? 'selected' : ''); ?>>samochód służbowy</option>
         </select>
         <br>
         <button type="button" onclick="clearInput('dodatkowe')">Wyczyść pole</button>
@@ -323,14 +288,15 @@ if(!$result) {
 
         <br><br>
 
-        <input type="submit" value="Wyślij" name="wyslij">
+        <input type="submit" value="Wyślij" name="wyslij" id="wyslijSubmit">
         <input type="reset" value="Wyczyść formularz">
     </form>
 
     <br><br><br>
 
-    
-    <form action="" name="deleteSingleRowForm" method="post">
+    <h3>Usuwanie rekordów po imieniu</h3>
+
+    <form action="" name="deleteSingleRowForm" method="post" onsubmit="return confirm('Usunięcie rekordu po imieniu usunie PIERWSZY napotkany rekord z tym imieniem. Kontynuować?');">
         <label for="imieToDelete">Wpisz Imię do usunięcia: </label>
         <input type="text" name="imieToDelete" id="imieToDelete">
         <input type="submit" name="deleteRow" value="Usuń rekord">
@@ -340,10 +306,12 @@ if(!$result) {
     <br><br>
 
     <br>
-    <span style="color: green;" id="formMessage"></span>
+    <span style="color: green;" id="formMessage">
+        
+    </span>
     <br>
     <?php
-    echo(isset($formMessage) ? $formMessage : "");
+        echo(isset($formMessage) ? $formMessage : "");
     ?>
     <br>
 
@@ -352,9 +320,12 @@ if(!$result) {
 
     <br><br>
 
+    <h3>Wyświeltanie zawartości tabeli i usuwanie rekordów</h3>
+
     <table>
         <tr>
             <th><a href="?sort=imie">Imię</a></th>
+            <th><a href="?sort=nazwisko">Nazwisko</a></th>
             <th><a href="?sort=wiek">Wiek</a></th>
             <th>Płeć</th>
             <th>Numer telefonu</th>
@@ -366,52 +337,27 @@ if(!$result) {
         </tr>
 
         <?php
-        /*
-        //change to post form input hidden
         while($row = $result->fetch_assoc()) {
             echo("<tr>");
             echo("<td>" . htmlspecialchars($row['imie']) . "</td>");
+            echo("<td>" . htmlspecialchars($row['nazwisko']) . "</td>");
             echo("<td>" . htmlspecialchars($row['wiek']) . "</td>");
             echo("<td>" . htmlspecialchars($row['plec']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['telefon']) . "</tsd>");
-            echo("<td>" . htmlspecialchars($row['email']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['wyksztalcenie']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['dodatkowe']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['kwalifikacje']) . "</td>");
-            echo("<td><a name='delete' href='php_baza4.php?imie=" . urlencode($row['imie']) .
-            "&plec=" . urlencode($row['plec']) .
-            "&wiek=" . urlencode($row['wiek']) .
-            "&telefon=" . urlencode($row['telefon']) .
-            "&email=" . urlencode($row['email']) .
-            "&wyksztalcenie=" . urlencode($row['wyksztalcenie']) .
-            "&dodatkowe=" . urlencode($row['dodatkowe']) .
-            "&kwalifikacje=" . urlencode($row['kwalifikacje']).
-            "&delete=1'  
-            onclick=\"return confirm('Czy na pewno chcesz usunąć ten rekord?');\">
-            Usuń</a></td>");
-            echo("</tr>");
-        }
-        */
-
-        while($row = $result->fetch_assoc()) {
-            echo("<tr>");
-            echo("<td>" . htmlspecialchars($row['imie']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['wiek']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['plec']) . "</td>");
-            echo("<td>" . htmlspecialchars($row['telefon']) . "</tsd>");
+            echo("<td>" . htmlspecialchars($row['telefon']) . "</td>");
             echo("<td>" . htmlspecialchars($row['email']) . "</td>");
             echo("<td>" . htmlspecialchars($row['wyksztalcenie']) . "</td>");
             echo("<td>" . htmlspecialchars($row['dodatkowe']) . "</td>");
             echo("<td>" . htmlspecialchars($row['kwalifikacje']) . "</td>");
             echo("<td>" . "<form action='' method='post' name='deleteForm'>" .
-                "<input type='hidden' name='imieDelete' value='" . $row['imie'] . "'>" .
-                "<input type='hidden' name='wiekDelete' value='" . $row['wiek'] . "'>" .
-                "<input type='hidden' name='plecDelete' value='" . $row['plec'] . "'>" .
-                "<input type='hidden' name='telefonDelete' value='" . $row['telefon'] . "'>" .
-                "<input type='hidden' name='emailDelete' value='" . $row['email'] . "'>" .
-                "<input type='hidden' name='wyksztalcenieDelete' value='" . $row['wyksztalcenie'] . "'>" .
-                "<input type='hidden' name='dodatkoweDelete' value='" . $row['dodatkowe'] . "'>" .
-                "<input type='hidden' name='kwalifikacjeDelete' value='" . $row['kwalifikacje'] . "'>" .
+                "<input type='hidden' name='imieDelete' value='" . htmlspecialchars($row['imie']) . "'>" .
+                "<input type='hidden' name='nazwiskoDelete' value='" . htmlspecialchars($row['nazwisko']) . "'>" .
+                "<input type='hidden' name='wiekDelete' value='" . htmlspecialchars($row['wiek']) . "'>" .
+                "<input type='hidden' name='plecDelete' value='" . htmlspecialchars($row['plec']) . "'>" .
+                "<input type='hidden' name='telefonDelete' value='" . htmlspecialchars($row['telefon']) . "'>" .
+                "<input type='hidden' name='emailDelete' value='" . htmlspecialchars($row['email']) . "'>" .
+                "<input type='hidden' name='wyksztalcenieDelete' value='" . htmlspecialchars($row['wyksztalcenie']) . "'>" .
+                "<input type='hidden' name='dodatkoweDelete' value='" . htmlspecialchars($row['dodatkowe']) . "'>" .
+                "<input type='hidden' name='kwalifikacjeDelete' value='" . htmlspecialchars($row['kwalifikacje']) . "'>" .
                 "<input type='submit' name='usun' value='Usuń' onclick='return confirm(\"Czy na pewno chcesz usunąć ten rekord?\");'>" .
                 "</form>" . "</td>");
             echo("</tr>");  
@@ -429,6 +375,11 @@ if(!$result) {
         }
 
         getId("imie").addEventListener("input", function() {
+            this.value = this.value.replace(/\P{L}/gu, "");
+            this.value = this.value.slice(0,1).toUpperCase() + this.value.slice(1).toLowerCase();
+        });
+
+        getId("nazwisko").addEventListener("input", function() {
             this.value = this.value.replace(/\P{L}/gu, "");
             this.value = this.value.slice(0,1).toUpperCase() + this.value.slice(1).toLowerCase();
         });
@@ -463,7 +414,9 @@ if(!$result) {
             }
 
             if(input == "dodatkowe") {
-                getId("dodatkowe").value = "";
+                getId("karnet").selected = false;
+                getId("kawa").selected = false;
+                getId("samochod").selected = false;
                 return;
             }
 
@@ -477,6 +430,7 @@ if(!$result) {
         }
 
         function disableForm(state) {
+            getId('wiek').disabled = state;
             getId('male').disabled = state;
             getId('female').disabled = state;
             getId('telefon').disabled = state;
@@ -485,12 +439,14 @@ if(!$result) {
             getId('dodatkowe').disabled = state;
             getId('pierwszaPomoc').disabled = state;
             getId('wiedzaIT').disabled = state;
+            getId('wyslijSubmit').disabled = state;
+            
         }
 
         function checkFormState() {
-            if(getId("imie").value == "" || getId("wiek").value == "") {
+            if(getId("imie").value == "" || getId("nazwisko").value == "") {
                 disableForm(true);
-                getId("formMessage").innerHTML = "<span style='color: #fc9b25;'>Proszę uzupełnić pola Imię i Wiek aby odblokować resztę formularza!</span>";
+                getId("formMessage").innerHTML = "<span style='color: #fc9b25;'>Proszę uzupełnić pola Imię i Nazwisko aby odblokować resztę formularza!</span>";
             } else {
                 disableForm(false);
                 getId("formMessage").innerHTML = "";
