@@ -263,7 +263,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logoutFormSubmit"])) {
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            alert("Przypominamy o konieczności wypełnienia formularza!");
+            alert("Przypominamyz o konieczności wypełnienia formularza!");
         });
 
         function getId(id) {
