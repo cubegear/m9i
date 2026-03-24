@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>js_skrypty3</title>
+    <style>
+        body {
+            background-color: rgb(227, 227, 227);
+        }
+
+        div#layout {
+            width: 960px;
+            height: 720px;
+            outline: 1px solid #000;
+            margin: 50px auto;
+        }
+
+        header {
+            height: 150px;
+            width: 960px;
+            text-align: center;
+            line-height: 150px;
+            font-size: 18pt;
+            outline: 1px solid #000;
+            background-color: rgb(127, 164, 164);
+        }
+
+        footer {
+            height: 150px;
+            width: 960px;
+            outline: 1px solid #000;
+            clear: both;
+            background-color: rgb(127, 164, 164);
+        }
+
+        nav {
+            width: 200px;
+            height: 420px;
+            float: left;
+            outline: 1px solid #000;
+            background-color: rgb(164, 201, 201);
+            text-align: center;
+        }
+
+        main {
+            width: 760px;
+            height: 420px;
+            outline: 1px solid #000;
+            float: left;
+            background-color: rgb(166, 224, 224);
+        }
+
+        aside {
+            width: 200px;
+            height: 420px;
+            float: right;
+            outline: 1px solid #000;
+            background-color: rgb(164, 201, 201);
+        }
+
+        article {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 1px 2px 1px 5px;
+        }
+
+
+        section#mainSection {
+            width: 560px;
+            height: 420px;
+            float: left;
+            outline: 1px solid #000;
+            margin: 0;
+        }
+
+        article#jednostkiMiaryArticle {
+            width: 150px;
+            height: 200px;
+            outline: 1px solid #000;
+            float: left;
+            margin-left: 10px;
+        }
+
+        article#systemyLiczboweArticle {
+            width: 370px;
+            height: 200px;
+            outline: 1px solid #000;
+            float: left;
+            margin-left: 5px;
+        }
+
+        article#obwodIPoleTrojkataArticle {
+            width: 532px;
+            height: 150px;
+            outline: 1px solid #000;
+            float: left;
+            margin-left: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 5px;
+        }
+
+        h3 {
+            text-align: center;
+            margin: 0;
+        }
+
+        nav div {
+            outline: 1px solid #000;
+            height: 195px;
+            width: 200px;
+            padding-top: 15px;
+            font-size: 18pt;
+        }
+
+        a {
+            display: block;
+            font-size: 14pt;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        div#menu1 a:first-of-type, div#menu2 a:first-of-type {
+            margin-top: 10px;
+        }
+
+        div#menu1 a {
+            color: #000;
+            outline: 1px solid #000;
+            width: 70px;
+            height: 25px;
+            margin: 5px auto;
+            
+        }
+
+        div#menu2 a {
+            width: 75px;
+            height: 25px;
+            margin: 5px auto;
+        }
+
+        aside {
+            text-align: center;
+            font-size: 14pt;
+        }
+
+        aside a{
+            display: block;
+            outline: 1px solid #000;
+            background-color: #fff;
+            width: 80px;
+            height: 80px;
+            margin: 15px auto;
+            text-align: center;
+            line-height: 75px;
+        }
+
+        #obecnaData, #dataModyfikacji, #wymiaryEkranu, #kodowanieZnakow {
+            line-height: 60px;
+
+        }
+
+        footer div {
+            float: left;
+            width: 300px;
+            height: 65px;
+            font-size: 12pt;
+            text-align: center;
+            margin: 5px 10px;
+            line-height: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="layout">
+        <header>
+            <h1>SKRYPTY JAVASCRIPT I PHP</h1>
+        </header>
+
+        <nav>
+            <div id="menu1">
+                <strong>MENU 1</strong>
+                <a href="#">Strona 1</a>
+                <a href="#">Strona 2</a>
+                <a href="#">Strona 3</a>
+                <a href="#">Strona 4</a>
+            </div>
+    
+            <div id="menu2">
+                <strong>MENU 2</strong>
+                <a href="#">Strona 10</a>
+                <a href="#">Strona 11</a>
+                <a href="#">Strona 12</a>
+                <a href="#">Strona 13</a>
+            </div>
+        </nav>
+
+        <main>
+            <section id="mainSection">
+                <h2>SKRYPTY JAVASCRIPT</h2>
+
+                <article id="jednostkiMiaryArticle">
+                    <h3>JEDNOSTKI MIARY</h3>
+                    <form action="" name="jednostkiMiaryForm" method="post">
+                        <label for="wartosc">Wartość: </label>
+                        <input type="text" name="wartosc" id="wartosc" size="10">
+                        <input type="button" value="CM na Cale" id="cmNaCale">
+                        <input type="button" value="Cale na CM" id="caleNaCm">
+                    </form>
+
+                    <div id="jednostkiMiaryFormOutput">
+
+                    </div>
+                </article>
+
+                <article id="systemyLiczboweArticle">
+                    <h3>SYSTEMY LICZBOWE</h3>
+                    <form action="" method="post" name="systemyLiczboweForm">
+                        <label for="liczba">Wpisz liczbę: </label>
+                        <input type="text" name="liczba" id="liczba">
+                        <br>
+                        <input type="button" value="Dziesętny na 16 i 8" id="decToHexAndOct">
+                        <br>
+                        <input type="button" value="Szesnastkowy na 10" id="hexToDec">
+                        <br>
+                        <input type="button" value="Ósemkowy na 10" id="octToDec"> 
+                    </form>
+
+                    <div id="systemyLiczboweOutput">
+
+                    </div>
+                </article>
+
+                <article id="obwodIPoleTrojkataArticle">
+                    <h3>OBWÓD I POLE TRÓJKĄTA</h3>
+                    <form action="" method="post" name="obIPoleTrojkataForm">
+                        <label for="a">Bok a: </label>
+                        <input type="text" name="a" id="a">
+                        <span id="aError"></span>
+                        <br>
+                        <label for="b">Bok b: </label>
+                        <input type="text" name="b" id="b">
+                        <span id="bError"></span>
+                        <br>
+                        <label for="c">Bok c: </label>
+                        <input type="text" name="c" id="c">
+                        <span id="cError"></span>
+                        <br>
+                        <input type="button" value="Oblicz" id="obliczTrojkat">
+                    </form>
+
+                    <div id="trojkatWynik">
+
+                    </div>
+                </article>        
+            </section>
+
+            <aside>
+                <a href="https://zstie.edu.pl/">ZSTIE</a>
+                zstie.edu.pl
+                <a href="https://www.wroclaw.pl/">Wrocław</a>
+                www.wroclaw.pl
+                <a href="https://oke.wroc.pl/">OKE</a>
+                oke.wroc.pl
+            </aside>
+        </main>
+
+        <footer>
+            <div id="obecnaData"></div>
+            <div id="nazwaPrzegladarki"></div>
+            <div id="wymiaryEkranu"></div>
+            <div id="dataModyfikacji"></div>
+            <div id="adresStrony"></div>
+            <div id="kodowanieZnakow"></div>
+        </footer>
+    </div>
+
+    <script>
+        function getId(id) {
+            return document.getElementById(id);
+        }
+
+        getId("decToHexAndOct").addEventListener("click", function() {
+            let liczba = getId("liczba").value;
+            let outputDiv = getId("systemyLiczboweOutput");
+
+            outputDiv.innerText = "";
+
+            if(liczba == "") {
+                outputDiv.innerHTML = "<span style='color:red;'>Liczba nie może być pusta!</span>";
+                return;
+            }
+
+            liczba = Number(liczba);
+
+            if(isNaN(liczba)) {
+                outputDiv.innerHTML = "<span style='color:red;'>Prosze podać poprawną liczbę w systemie Dziesiętnym!</span>";
+                return;
+            }
+
+            let outputValueHex = liczba.toString(16);
+            let outputValueOct = liczba.toString(8);
+            
+            outputDiv.innerHTML = "<span style='color:green;'>Liczba w systemie Szesnastkowym (16): " + outputValueHex + "<br>Liczba w systemie Ósemkowym (8): " + outputValueOct + "</span>";
+        });
+
+        getId("hexToDec").addEventListener("click", function() {
+            let liczba = getId("liczba").value;
+            let outputDiv = getId("systemyLiczboweOutput");
+
+            outputDiv.innerText = "";
+
+            if(liczba == "") {
+                outputDiv.innerHTML = "<span style='color:red;'>Liczba nie może być pusta!</span>";
+                return;
+            }
+
+            let outputValueDec = parseInt(liczba, 16);
+
+            if(outputValueDec) {
+                outputDiv.innerHTML = "<span style='color:green;'>Liczba w systemie Dziesiętnym (10): " + outputValueDec + "</span>";
+                return;
+            } else {
+                outputDiv.innerHTML = "<span style='color:red;'>Prosze podać poprawną liczbę w systemie Szesnastkowym!</span>";
+                return;
+            }  
+        });
+
+        getId("octToDec").addEventListener("click", function() {
+            let liczba = getId("liczba").value;
+            let outputDiv = getId("systemyLiczboweOutput");
+
+            outputDiv.innerText = "";
+
+            if(liczba == "") {
+                outputDiv.innerHTML = "<span style='color:red;'>Liczba nie może być pusta!</span>";
+                return;
+            }
+
+            let outputValueDec = parseInt(liczba, 8);
+
+            if(outputValueDec) {
+                outputDiv.innerHTML = "<span style='color:green;'>Liczba w systemie Dziesiętnym (10): " + outputValueDec + "</span>";
+                return;
+            } else {
+                outputDiv.innerHTML = "<span style='color:red;'>Prosze podać poprawną liczbę w systemie Ósemkowym!</span>";
+                return;
+            }  
+        });
+
+        getId("wartosc").addEventListener("input", function() {
+            this.value = this.value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, ".");
+        });
+
+        getId("cmNaCale").addEventListener("click", function() {
+            let wartosc = getId("wartosc").value;
+            let outputDiv = getId("jednostkiMiaryFormOutput");
+
+            if(wartosc == "") {
+                outputDiv.innerHTML = "<span style='color:red;'>Pole nie może być puste!</span>";
+                return;
+            }
+
+            if(isNaN(wartosc)) {
+                outputDiv.innerHTML = "<span style='color:red;'>Wartość musi być liczbą!</span>";
+                return;
+            }
+
+            if(Number(wartosc) <= 0) {
+                outputDiv.innerHTML = "<span style='color:red;'>Wartość musi większa od zera!</span>";
+                return;
+            }
+
+            let wynik = (Number(wartosc) / 2.54).toFixed(2);
+
+            outputDiv.innerHTML = "<span style='color:green;'>Wynik to: " + wynik + " cali</span>";
+        });
+
+
+        getId("a").addEventListener("input", function() {
+            this.value = this.value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, ".");
+        });
+
+        getId("b").addEventListener("input", function() {
+            this.value = this.value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, ".");
+        });
+
+        getId("c").addEventListener("input", function() {
+            this.value = this.value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, ".");
+        });
+        
+        getId("caleNaCm").addEventListener("click", function() {
+            let wartosc = getId("wartosc").value;
+            let outputDiv = getId("jednostkiMiaryFormOutput");
+
+            if(wartosc == "") {
+                outputDiv.innerHTML = "<span style='color:red;'>Pole nie może być puste!</span>";
+                return;
+            }
+
+            if(isNaN(wartosc)) {
+                outputDiv.innerHTML = "<span style='color:red;'>Wartość musi być liczbą!</span>";
+                return;
+            }
+
+            if(Number(wartosc) <= 0) {
+                outputDiv.innerHTML = "<span style='color:red;'>Wartość musi większa od zera!</span>";
+                return;
+            }
+
+            let wynik = (Number(wartosc) * 2.54).toFixed(2);
+
+            outputDiv.innerHTML = "<span style='color:green;'>Wynik to: " + wynik + " cm</span>";
+        });
+
+
+        getId("obliczTrojkat").addEventListener("click", function() {
+            let trojkatWynikDiv = getId("trojkatWynik");
+
+            let a = Number(getId("a").value);
+            let b = Number(getId("b").value);
+            let c = Number(getId("c").value);
+
+            let aErrorMessage = "";
+            let bErrorMessage = "";
+            let cErrorMessage = "";
+
+            let aErrorSpan = getId("aError");
+            let bErrorSpan = getId("bError");
+            let cErrorSpan = getId("cError");
+
+
+            if(a == "") aErrorMessage = "<span style='color:red;'>Pole nie może być puste lub równe zero!</span>";
+            if(b == "") bErrorMessage = "<span style='color:red;'>Pole nie może być puste lub równe zero!</span>";
+            if(c == "") cErrorMessage = "<span style='color:red;'>Pole nie może być puste lub równe zero!</span>";
+
+
+            if(aErrorMessage == "" && isNaN(a)) aErrorMessage = "<span style='color:red;'>Wartość musi być liczbą!</span>";
+            if(bErrorMessage == "" && isNaN(b)) bErrorMessage = "<span style='color:red;'>Wartość musi być liczbą!</span>";
+            if(cErrorMessage == "" && isNaN(c)) cErrorMessage = "<span style='color:red;'>Wartość musi być liczbą!</span>";
+            
+            if(aErrorMessage == "" && a <= 0) aErrorMessage = "<span style='color:red;'>Wartość musi być liczbą dodatnią!</span>";
+            if(bErrorMessage == "" && b <= 0) bErrorMessage = "<span style='color:red;'>Wartość musi być liczbą dodatnią!</span>";
+            if(cErrorMessage == "" && c <= 0) cErrorMessage = "<span style='color:red;'>Wartość musi być liczbą dodatnią!</span>";
+
+
+            aErrorSpan.innerHTML = aErrorMessage;
+            bErrorSpan.innerHTML = bErrorMessage;
+            cErrorSpan.innerHTML = cErrorMessage;
+
+            
+            if(aErrorSpan.innerHTML == "" && bErrorSpan.innerHTML == "" && cErrorSpan.innerHTML == "") {
+                let obwod = a + b + c;
+
+                let p = obwod / 2;
+
+                let pole = Math.sqrt(p * (p-a) * (p-b) * (p-c));
+
+                if(a+b>c && a+c>b && c+b>a) {
+                    trojkatWynikDiv.innerHTML = "<span style='color:green;'>Pole: " + pole.toFixed(2) + ", Obwód: " + obwod.toFixed(2) + "</span>";
+                } else {
+                    trojkatWynikDiv.innerHTML = "<span style='color:red;'>Taki trójkąt nie może istnieć!</span>";
+                }
+            } else {
+                trojkatWynikDiv.innerHTML = "";
+            }
+        });
+
+        
+
+        function disableForm(form) {
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+            });
+        }
+
+        document.querySelectorAll("form").forEach(disableForm);
+
+        function updateCurrentTime() {
+            let obecnaData = new Date();
+            getId("obecnaData").innerText = "Obecna data: " + obecnaData.toLocaleString();
+        }
+
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+        
+        getId("dataModyfikacji").innerText = "Data modyfikacji: " + document.lastModified;
+        getId("kodowanieZnakow").innerText = "Kodowanie znaków: " + document.characterSet;
+        getId("nazwaPrzegladarki").innerText = "Nazwa przeglądarki: " + navigator.userAgent;
+        getId("adresStrony").innerText = "Adres strony: " + document.location.href;
+        getId("wymiaryEkranu").innerText = "Wymiary ekranu: " + screen.width + " x " + screen.height + " px";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            alert("Przypominamy o wypełnieniu wszystkich pól formularza!");
+        });
+    </script>
+</body>
+</html>
