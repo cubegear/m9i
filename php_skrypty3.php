@@ -1,5 +1,6 @@
 <?php
-session_start();
+$sessionName = "sesja";
+session_start(["name" => $sessionName]);
 
 $servername = "localhost";
 $username = "root";
@@ -17,49 +18,80 @@ try {
 }   
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["dbCreate"])) {
-    
+    try {
+        $checkSQL = "SHOW DATABASES LIKE 'visitors';";
+        $checkResult = $conn->query($checkSQL);
+        $dbExists = ($checkResult->rowCount() > 0);
+        $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
+        $conn->exec($sql);
 
-    $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
-    $conn->exec($sql);
-
-    $formMessage = "Pomyślnie stworzono bazę danych $dbname (jeżeli nie istniała)";
- 
+        if($dbExists) {
+            $formMessage = "<span style='color:red;'>Baza danych $dbname już istnieje!</span>";
+        } else {
+            $formMessage = "<span style='color:green;'>Pomyślnie stworzono bazę danych $dbname</span>";
+        }
+    } catch(PDOException $e) {
+        $formMessage = "<span style='color:red;'>Wystąpił problem z wykonywaniem zapytania:" . $e->getMessage() . "</span>";
+    }   
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["dbDelete"])) {
+    try {
+        $checkSQL = "SHOW DATABASES LIKE 'visitors';";
+        $checkResult = $conn->query($checkSQL);
+        $dbExists = ($checkResult->rowCount() > 0);
+        $sql = "DROP DATABASE IF EXISTS $dbname";
+        $conn->exec($sql);
 
-    $sql = "DROP DATABASE IF EXISTS $dbname";
-    $conn->exec($sql);
-
-    $formMessage = "Pomyślnie usunięto bazę danych $dbname (jeżeli istniała)";
+        if($dbExists) {
+            $formMessage = "<span style='color:green;'>Pomyślnie usunięto bazę danych $dbname</span>";
+        } else {
+            $formMessage = "<span style='color:red;'>Baza danych $dbname nie istnieje!</span>";
+        }
+    } catch(PDOException $e) {
+        $formMessage = "<span style='color:red;'>Wystąpił problem z wykonywaniem zapytania:" . $e->getMessage() . "</span>";
+    }
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["tableAdd"])) {
-
     try {
-        $conn->exec("USE $dbname");
-        $createTableSQL = "CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL,
-            email VARCHAR(100) NOT NULL UNIQUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )";
+        $checkSQL = "SHOW DATABASES LIKE 'visitors';";
+        $checkResult = $conn->query($checkSQL);
+        $dbExists = ($checkResult->rowCount() > 0);
 
-        $conn->exec($createTableSQL);
-        $formMessage = "Pomyślnie stworzono tabelę";
+        if(!$dbExists) {
+            $formMessage = "<span style='color:red;'>Nie można stworzyć tabeli users bez bazy danych $dbname!</span>";
+        } else {
+            $conn->exec("USE $dbname");
+            $checkSQL = "SHOW TABLES LIKE 'users';";
+            $checkResult = $conn->query($checkSQL);
+            $tableExists = ($checkResult->rowCount() > 0);
 
+            $createTableSQL = "CREATE TABLE IF NOT EXISTS users (
+                pesel INT NOT NULL,
+                imie VARCHAR(50) NOT NULL,
+                nazwisko VARCHAR(50) NOT NULL,
+                plec VARCHAR(50) NOT NULL,
+                wiek INT NOT NULL,
+                hobby VARCHAR(50) NOT NULL
+            );";
+
+            $conn->exec($createTableSQL);
+
+            if($tableExists) {
+                $formMessage = "<span style='color:red;'>Tabela users już istnieje!</span>";
+            } else {
+                $formMessage = "<span style='color:green;'>Pomyślnie stworzono tabelę users</span>";
+            }
+        }
+
+        
     } catch (PDOException $e) {
-        $formMessage = "Nie można stworzyć tabeli bez bazy danych!";
+        $formMessage = "<span style='color:red;'>Wystąpił problem z wykonywaniem zapytania:" . $e->getMessage() . "</span>";
     }
 
 }
 
-    
-
-
-
-
-$_SESSION["sesja"] = "true";
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["wyswietl"])) {
     $text = isset($_POST["text"]) ? $_POST["text"] : "";
@@ -87,52 +119,46 @@ $conn = null;
     <title>php_skrypty3</title>
 </head>
 <body>
-    <!-- 
-    do zrobienia:
-    1) Tworzenie sesji o nazwie "sesja" i wyswietlanie jej ID
-    2) Input z text area:
-    - przycisk wyswietlajacy text z textarea 1:1
-    - przycisk wyswietlajacy text z textarea tylko ze lowercase
-    - przycisk wyswietlajacy text z textarea ktory zmienia 1 znaki kazdego slowa na uppercase
-    3) Baza danych PDO:
-    - przycisk tworzacy baze danych "visitors"
-    - przycisk dodajacy do bazy danych "visitors" tabele "users" z pesel: int, imie: varchar, nazwisko: varchar, plec: varchar, wiek: int, hobby: varchar
-    - przycisk usuwajacy baze danych "visitors"
-    -->
+    <h1>Ćwiczenie php_skrypty3, waga: 3, czas 2l.</h1>
 
-    <h3>Id sesji</h3>
+    <br>
+
+    <h2>Utworzenie sesji</h2>
+    <p>Utworzyć sesje, a następnie pokazać na ekranie ID tej sesji</p>
     <?php
-    echo(session_id());
+        echo('Utworzono sesje o zmiennej: '.$sessionName.'.<br>Identyfikatorem sesji jest: '. session_id());
     ?>
-
+    
     <br><br>
 
-    <h3>textarea</h3>
+    <h2>Ciągi znaków</h2>
+    <div>formatowanie tekstu</div>
+
     <form action="" method="post" name="textForm">
-        <textarea name="text" id="text"></textarea>
-        <input type="submit" value="Wyświetl" name="wyswietl">
-        <input type="submit" value="Wyświetl Lowercase" name="wyswietlLowercase">
-        <input type="submit" value="Wyświetl Pierwsze Uppercase" name="wyswietlFirstUppercase">
+        <textarea name="text" id="text"></textarea><br>
+        <input type="submit" value="Tylko wyświetl" name="wyswietl">
+        <input type="submit" value="Wyświetl tylko z małych liter" name="wyswietlLowercase">
+        <input type="submit" value="Wyświetl pierwsze litery słów z wielkiej litery" name="wyswietlFirstUppercase">
     </form>
 
-    <div id="output">
-        <?php
-        echo(isset($output) ? $output : "");
-        ?>
-    </div>
+
+    <?php
+    echo(isset($output) ? $output : "");
+    ?>
+    
 
     <br><br>
 
-    <h3>baza danych pdo</h3>
+    <h2>Baza danych PDO</h2>
+    <div>Utwórz bazę danych o nazwie visitors oraz tabelę user, w której występują pola: pesel(int), imie(varchar), nazwisko(varchar), plec(varchar), wiek(int), hobby(varchar) - lista wyboru</div>
     <form action="" method="post" name="pdoDatabase">
-        <input type="submit" value="Stwórz baze danych" name="dbCreate">
-        <input type="submit" value="Dodaj tabele" name="tableAdd">
-        <input type="submit" value="Usuń baze danych" name="dbDelete">
+        <input type="submit" value="Utwórz bazę danych" name="dbCreate">
+        <input type="submit" value="Utwórz tabelę" name="tableAdd">
+        <input type="submit" value="Usuń bazę danych" name="dbDelete">
     </form>
+    <br>
     <?php
         echo(isset($formMessage) ? $formMessage : "");
     ?>
-
-
 </body>
 </html>
